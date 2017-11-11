@@ -1,2 +1,2 @@
-# openlobby-app
+# Open Lobby App
 Open Lobby default application.
