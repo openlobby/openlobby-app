@@ -1,0 +1,25 @@
+{% extends "core/skeleton.html" %}
+
+{% block content %}
+
+<div class="m-4">
+
+  <h5>Profil autora</h5>
+
+  <div class="border rounded bg-light py-2">
+
+    <div class="d-flex">
+      <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">jméno:</small></div>
+      <div class="">{{ author.name }}</div>
+    </div>
+
+    {% if author.extra.login %}
+      <div class="d-flex pt-1">
+        <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">profil na Pirátském fóru:</small></div>
+        <div class=""><a href="{{ author.extra.link }}">{{ author.extra.login }}</a></div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

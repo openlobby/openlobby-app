@@ -1,0 +1,9 @@
+{% extends "core/skeleton.html" %}
+
+{% block content %}
+
+{% for report in reports %}
+  {% include "core/report_snippet.html" %}
+{% endfor %}
+
+{% endblock %}

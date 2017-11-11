@@ -1,0 +1,51 @@
+<div class="row m-4">
+  <div class="col-9 p-0 border rounded-left">
+
+    <div class="d-flex justify-content-start py-1 border border-left-0 border-right-0 border-top-0 bg-light">
+      <div class="pl-3 pr-2">{{ report.date|date:"j. n. Y" }}</div>
+      <div class="px-2"><b><a href="{% url 'report' id=report.id %}">{{ report.title }}</a></b></div>
+    </div>
+
+    <div class="d-flex">
+      <div class="px-3 pt-2">
+        {{ report.body|linebreaks }}
+      </div>
+    </div>
+
+    {% if report.receivedBenefit %}
+      <div class="d-flex border border-left-0 border-right-0 border-bottom-0 bg-light">
+        <div class="px-3 py-1 text-right" style="min-width: 11em"><small class="text-muted">přijaté výhody:</small></div>
+        <div class="py-1">{{ report.receivedBenefit }}</div>
+      </div>
+    {% endif %}
+
+    {% if report.providedBenefit %}
+      <div class="d-flex border border-left-0 border-right-0 border-bottom-0 bg-light">
+        <div class="px-3 py-1 text-right" style="min-width: 11em"><small class="text-muted">poskytnuté výhody:</small></div>
+        <div class="py-1">{{ report.providedBenefit }}</div>
+      </div>
+    {% endif %}
+
+  </div>
+  <div class="col-3 pt-2 border border-left-0 rounded-right d-flex flex-column bg-light">
+
+    <div><a href="{% url 'author' id=report.author.id %}">{{ report.author.name }}</a></div>
+
+    {% if report.extra.link %}
+    <div class="mt-auto py-1 small text-muted">
+      <div class="border rounded p-1">
+        report zkopírován z <a href="{{ report.extra.link }}">Pirátského fóra</a><br>
+      </div>
+    </div>
+    <div class="py-1">
+    {% else %}
+    <div class="mt-auto py-1">
+    {% endif %}
+      <span class="small text-muted">
+        publikováno: {{ report.published|date:"j. n. Y H:i" }}
+        <a class="ml-2" href="{% url 'report' id=report.id %}">permalink</a>
+      </span>
+    </div>
+
+  </div>
+</div>
