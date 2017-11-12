@@ -8,7 +8,7 @@ test:
 	pytest
 
 run:
-	python manage.py runserver 8020
+	DEBUG=1 python manage.py runserver 8020
 
 build:
 	docker build -t openlobby/openlobby-app:latest .
