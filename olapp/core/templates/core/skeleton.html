@@ -11,24 +11,22 @@
   </head>
   <body style="font-size: 90%">
 
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark">
       <div class="container-fluid px-4">
         <a class="navbar-brand" href="/">Registr lobbistických schůzek <sup class="text-muted">beta</sup></a>
-        <!--
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#">registrace</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">přihlášení</a>
-            </li>
-          </ul>
-        </div>
-        -->
+
+        <form class="form-inline justify-content-center" action="{% url 'index' %}" method="get">
+          <input class="form-control form-control-sm" type="search" name="q" id="id_q" value="{{ form.q.value|default_if_none:"" }}">
+          <button class="btn btn-sm mx-2" type="submit">hledej</button>
+        </form>
+
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            {#<a class="nav-link" href="#">přihlášení</a>#}
+            <span class="text-secondary">přihlášení</span>
+          </li>
+        </ul>
+
       </div>
     </nav>
 

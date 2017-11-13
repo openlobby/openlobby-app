@@ -2,7 +2,8 @@ from django.conf import settings
 from django.http import Http404
 from django.views.generic.base import TemplateView
 
-from .queries import NotFoundError, get_all_reports, get_report, get_author
+from .forms import SearchForm
+from .queries import NotFoundError, search_reports, get_report, get_author
 
 
 class IndexView(TemplateView):
@@ -10,7 +11,16 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['reports'] = get_all_reports(settings.OPENLOBBY_API_URL)
+        query = ''
+
+        form = SearchForm(self.request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['q']
+            # we want to have a form with cleaned input
+            form = SearchForm({'q': query})
+
+        context['form'] = form
+        context['reports'] = search_reports(settings.OPENLOBBY_API_URL, query)
         return context
 
 

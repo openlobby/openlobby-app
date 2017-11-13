@@ -47,10 +47,10 @@ def parse_global_ids(reports):
     return reports
 
 
-def get_all_reports(api_url):
+def search_reports(api_url, search_query):
     query = """
-    query {
-        reports {
+    query {{
+        reports (query:"{query}") {{
             id
             date
             published
@@ -59,14 +59,14 @@ def get_all_reports(api_url):
             receivedBenefit
             providedBenefit
             extra
-            author {
+            author {{
                 id
                 name
                 extra
-            }
-        }
-    }
-    """
+            }}
+        }}
+    }}
+    """.format(query=search_query)
     data = post_query(api_url, query)
     reports = data['reports']
     reports = parse_global_ids(reports)
