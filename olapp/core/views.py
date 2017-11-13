@@ -16,7 +16,7 @@ class IndexView(TemplateView):
         form = SearchForm(self.request.GET)
         if form.is_valid():
             query = form.cleaned_data['q']
-            # we want to have a form with cleaned input
+            # replace form with new one with cleaned input
             form = SearchForm({'q': query})
 
         context['form'] = form
