@@ -26,25 +26,20 @@ def encode_global_id(type, id):
     return base64.b64encode(global_id.encode('utf-8')).decode('utf-8')
 
 
-def parse_dates(reports):
-    for r in reports:
-        r['date'] = arrow.get(r['date'])
-        r['published'] = arrow.get(r['published'])
-    return reports
+def pythonize_author(author):
+    author['id'] = decode_global_id(author['id'])
+    author['extra'] = json.loads(author['extra'])
+    return author
 
 
-def parse_extra(reports):
-    for r in reports:
-        r['extra'] = json.loads(r['extra'])
-        r['author']['extra'] = json.loads(r['author']['extra'])
-    return reports
-
-
-def parse_global_ids(reports):
-    for r in reports:
-        r['id'] = decode_global_id(r['id'])
-        r['author']['id'] = decode_global_id(r['author']['id'])
-    return reports
+def pythonize_report(report):
+    report['id'] = decode_global_id(report['id'])
+    report['extra'] = json.loads(report['extra'])
+    report['date'] = arrow.get(report['date'])
+    report['published'] = arrow.get(report['published'])
+    if 'author' in report:
+        report['author'] = pythonize_author(report['author'])
+    return report
 
 
 def search_reports(api_url, search_query):
@@ -69,10 +64,7 @@ def search_reports(api_url, search_query):
     """.format(query=search_query)
     data = post_query(api_url, query)
     reports = data['reports']
-    reports = parse_global_ids(reports)
-    reports = parse_dates(reports)
-    reports = parse_extra(reports)
-    return reports
+    return [pythonize_report(r) for r in reports]
 
 
 def get_report(api_url, id):
@@ -101,10 +93,7 @@ def get_report(api_url, id):
     report = data['node']
     if report is None:
         raise NotFoundError()
-    reports = parse_global_ids([report])
-    reports = parse_dates(reports)
-    reports = parse_extra(reports)
-    return reports[0]
+    return pythonize_report(report)
 
 
 def get_author(api_url, id):
@@ -123,6 +112,4 @@ def get_author(api_url, id):
     author = data['node']
     if author is None:
         raise NotFoundError()
-    author['id'] = decode_global_id(author['id'])
-    author['extra'] = json.loads(author['extra'])
-    return author
+    return pythonize_author(author)
