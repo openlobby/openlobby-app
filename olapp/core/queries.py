@@ -26,6 +26,10 @@ def encode_global_id(type, id):
     return base64.b64encode(global_id.encode('utf-8')).decode('utf-8')
 
 
+def encode_cursor(num):
+    return base64.b64encode(str(num).encode('utf-8')).decode('utf-8')
+
+
 def pythonize_author(author):
     author['id'] = decode_global_id(author['id'])
     author['extra'] = json.loads(author['extra'])
@@ -63,6 +67,7 @@ def search_reports(api_url, search_query):
     }}
     """.format(query=search_query)
     data = post_query(api_url, query)
+
     reports = data['reports']
     return [pythonize_report(r) for r in reports]
 
@@ -90,9 +95,11 @@ def get_report(api_url, id):
     }}
     """.format(id=encode_global_id('Report', id))
     data = post_query(api_url, query)
+
     report = data['node']
     if report is None:
         raise NotFoundError()
+
     return pythonize_report(report)
 
 
@@ -109,7 +116,62 @@ def get_author(api_url, id):
     }}
     """.format(id=encode_global_id('Author', id))
     data = post_query(api_url, query)
+
     author = data['node']
     if author is None:
         raise NotFoundError()
+
     return pythonize_author(author)
+
+
+def get_author_with_reports(api_url, id, slice=None):
+    if slice:
+        slice_info = """(first:{first}, after:"{after}")""".format(**slice)
+    else:
+        slice_info = ''
+
+    query = """
+    query {{
+        node (id:"{id}") {{
+            ... on Author {{
+                id
+                name
+                extra
+                reports {slice} {{
+                    totalCount
+                    edges {{
+                        cursor
+                        node {{
+                            id
+                            date
+                            published
+                            title
+                            body
+                            receivedBenefit
+                            providedBenefit
+                            extra
+                        }}
+                    }}
+                }}
+            }}
+        }}
+    }}
+    """.format(id=encode_global_id('Author', id), slice=slice_info)
+    data = post_query(api_url, query)
+
+    author = data['node']
+    if author is None:
+        raise NotFoundError()
+
+    author = pythonize_author(author)
+
+    for edge in author['reports']['edges']:
+        edge['node'] = pythonize_report(edge['node'])
+        # extend report with author info
+        edge['node']['author'] = {
+            'id': author['id'],
+            'name': author['name'],
+            'extra': author['extra'],
+        }
+
+    return author

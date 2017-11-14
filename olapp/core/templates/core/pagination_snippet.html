@@ -1,0 +1,21 @@
+{% if page_info.show %}
+<nav class="ml-auto">
+  <ul class="pagination pagination-sm my-0">
+    <li class="page-item {% if not page_info.previous_url %}disabled{% endif%}">
+      <a class="page-link" href="{{ page_info.previous_url|default_if_none:"#" }}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">Previous</span>
+      </a>
+    </li>
+    {% for page in page_info.pages %}
+      <li class="page-item {% if page.active %}disabled{% endif %}"><a class="page-link" href="{{ page.url }}">{{ page.num }}</a></li>
+    {% endfor %}
+    <li class="page-item {% if not page_info.next_url %}disabled{% endif%}">
+      <a class="page-link" href="{{ page_info.next_url|default_if_none:"#" }}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endif %}

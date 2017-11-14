@@ -3,11 +3,15 @@
 {% block content %}
 
 <div class="my-4">
-  <h5>Profil autora</h5>
-  <div class="border rounded bg-light py-2">
+  <h5 class="mb-3">Profil autora</h5>
+  <div class="border rounded bg-light py-2 px-0">
     <div class="d-flex">
       <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">jméno:</small></div>
       <div class="">{{ author.name }}</div>
+    </div>
+    <div class="d-flex pt-1">
+      <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">přidal reportů:</small></div>
+      <div class="">{{ total_reports }}</div>
     </div>
     {% if author.extra.login %}
       <div class="d-flex pt-1">
@@ -16,6 +20,16 @@
       </div>
     {% endif %}
   </div>
+</div>
+
+<div class="my-4">
+  <div class="d-flex align-items-end mb-3">
+    <h5 class="mb-0 mt-1">Reporty</h5>
+    {% include "core/pagination_snippet.html" %}
+  </div>
+  {% for report in reports %}
+    {% include "core/report_snippet.html" %}
+  {% endfor %}
 </div>
 
 {% endblock %}
