@@ -34,7 +34,11 @@ class IndexView(TemplateView):
 
         context['form'] = form
 
-        page = int(self.request.GET.get('p', 1))
+        try:
+            page = int(self.request.GET.get('p', 1))
+        except ValueError:
+            raise Http404
+
         if page > 1:
             cursor = encode_cursor((page - 1) * REPORTS_PER_PAGE)
             slice = {'query': query, 'first': REPORTS_PER_PAGE, 'after': cursor}
@@ -47,6 +51,9 @@ class IndexView(TemplateView):
 
         total_pages = math.ceil(search['totalCount'] / REPORTS_PER_PAGE)
 
+        if page > total_pages:
+            raise Http404
+
         url = reverse('index')
         pages = []
         for num in range(1, total_pages + 1):
@@ -55,6 +62,7 @@ class IndexView(TemplateView):
             pages.append({'num': num, 'url': page_url, 'active': page == num})
 
         context['page_info'] = get_page_info(page, pages, total_pages)
+
         return context
 
 
