@@ -97,5 +97,22 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+    },
+}
+
+
 openlobby_server_dsn = os.environ.get('OPENLOBBY_SERVER_DSN', 'http://localhost:8010')
 OPENLOBBY_API_URL = '{}/graphql'.format(openlobby_server_dsn)
