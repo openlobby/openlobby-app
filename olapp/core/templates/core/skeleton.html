@@ -11,7 +11,7 @@
   </head>
   <body style="font-size: 90%">
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-dark bg-dark mb-0"> {# mb-4 až tu nebude alert #}
       <div class="container px-3">
         <a class="navbar-brand" href="/">Registr lobbistických schůzek <sup class="text-muted">beta</sup></a>
 
@@ -31,6 +31,12 @@
       </div>
     </nav>
 
+    <div class="alert alert-warning text-center mt-0 mb-4 py-1">
+       Testovací režim. Obsah registru je testovací a neaktuální. Pro aktuální obsah přejděte na
+       <a href="https://forum.pirati.cz/vstupy-a-vystupy-f570/evidence-lobbistickych-kontaktu-t13315.html">Pirátské fórum</a>.
+       Cokoliv se může změnit. Podněty a připomínky pište <a href="https://forum.pirati.cz/administrativa-f498/plnohodnotna-evidence-lobbistickych-kontaktu-t37613.html">na fórum</a>.
+    </div>
+
     <div class="container">
       {% block content %}{% endblock %}
     </div>
@@ -38,7 +44,7 @@
     <div class="container-fluid pt-3 pb-2 border border-left-0 border-right-0 border-bottom-0 bg-light">
       <p class="text-muted text-center"><small>
         Toto je veřejný beta test systému Open Lobby pro Českou pirátskou stranu. Cokoliv se může změnit.<br>
-        Podněty a připomínky piště <a href="https://forum.pirati.cz/administrativa-f498/plnohodnotna-evidence-lobbistickych-kontaktu-t37613.html">na pirátském fóru</a>. Kontakt: <a href="mailto:jan.bednarik@gmail.com">jan.bednarik@gmail.com</a>
+        Podněty a připomínky pište <a href="https://forum.pirati.cz/administrativa-f498/plnohodnotna-evidence-lobbistickych-kontaktu-t37613.html">na pirátském fóru</a>. Kontakt: <a href="mailto:jan.bednarik@gmail.com">jan.bednarik@gmail.com</a>
       </small></p>
     </div>
 
