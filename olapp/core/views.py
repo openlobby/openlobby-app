@@ -51,7 +51,7 @@ class IndexView(TemplateView):
 
         total_pages = math.ceil(search['totalCount'] / REPORTS_PER_PAGE)
 
-        if page > total_pages:
+        if page > total_pages and page != 1:
             raise Http404
 
         url = reverse('index')
