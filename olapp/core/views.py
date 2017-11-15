@@ -1,3 +1,4 @@
+import urllib.parse
 import math
 from django.conf import settings
 from django.http import Http404
@@ -32,7 +33,28 @@ class IndexView(TemplateView):
             form = SearchForm({'q': query})
 
         context['form'] = form
-        context['reports'] = search_reports(settings.OPENLOBBY_API_URL, query)
+
+        page = int(self.request.GET.get('p', 1))
+        if page > 1:
+            cursor = encode_cursor((page - 1) * REPORTS_PER_PAGE)
+            slice = {'query': query, 'first': REPORTS_PER_PAGE, 'after': cursor}
+        else:
+            slice = {'query': query, 'first': REPORTS_PER_PAGE}
+
+        search = search_reports(settings.OPENLOBBY_API_URL, slice)
+        context['reports'] = [edge['node'] for edge in search['edges']]
+        context['total_reports'] = search['totalCount']
+
+        total_pages = math.ceil(search['totalCount'] / REPORTS_PER_PAGE)
+
+        url = reverse('index')
+        pages = []
+        for num in range(1, total_pages + 1):
+            url_qs = urllib.parse.urlencode({'q': query, 'p': num})
+            page_url = '{}?{}'.format(url, url_qs)
+            pages.append({'num': num, 'url': page_url, 'active': page == num})
+
+        context['page_info'] = get_page_info(page, pages, total_pages)
         return context
 
 
@@ -60,7 +82,7 @@ class AuthorView(TemplateView):
             cursor = encode_cursor((page - 1) * REPORTS_PER_PAGE)
             slice = {'first': REPORTS_PER_PAGE, 'after': cursor}
         else:
-            slice = ''
+            slice = {'first': REPORTS_PER_PAGE}
 
         try:
             author = get_author_with_reports(settings.OPENLOBBY_API_URL, id, slice)

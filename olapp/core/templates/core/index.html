@@ -2,8 +2,14 @@
 
 {% block content %}
 
+<div class="my-3 d-flex justify-content-end">
+  {% include "core/pagination_snippet.html" %}
+</div>
+
 {% for report in reports %}
   {% include "core/report_snippet.html" %}
+{% empty %}
+  <p class="text-center mb-4">Nenalezen žádný report.</p>
 {% endfor %}
 
 {% endblock %}

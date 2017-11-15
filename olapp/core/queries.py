@@ -46,30 +46,43 @@ def pythonize_report(report):
     return report
 
 
-def search_reports(api_url, search_query):
+def search_reports(api_url, slice):
+    if 'after' in slice:
+        slice_info = """(query:"{query}", first:{first}, after:"{after}")""".format(**slice)
+    else:
+        slice_info = """(query:"{query}", first:{first})""".format(**slice)
+
     query = """
     query {{
-        reports (query:"{query}") {{
-            id
-            date
-            published
-            title
-            body
-            receivedBenefit
-            providedBenefit
-            extra
-            author {{
-                id
-                name
-                extra
+        searchReports {slice} {{
+            totalCount
+            edges {{
+                node {{
+                    id
+                    date
+                    published
+                    title
+                    body
+                    receivedBenefit
+                    providedBenefit
+                    extra
+                    author {{
+                        id
+                        name
+                        extra
+                    }}
+                }}
             }}
         }}
     }}
-    """.format(query=search_query)
+    """.format(slice=slice_info)
     data = post_query(api_url, query)
+    search = data['searchReports']
 
-    reports = data['reports']
-    return [pythonize_report(r) for r in reports]
+    for edge in search['edges']:
+        edge['node'] = pythonize_report(edge['node'])
+
+    return search
 
 
 def get_report(api_url, id):
@@ -124,11 +137,11 @@ def get_author(api_url, id):
     return pythonize_author(author)
 
 
-def get_author_with_reports(api_url, id, slice=None):
-    if slice:
+def get_author_with_reports(api_url, id, slice):
+    if 'after' in slice:
         slice_info = """(first:{first}, after:"{after}")""".format(**slice)
     else:
-        slice_info = ''
+        slice_info = """(first:{first})""".format(**slice)
 
     query = """
     query {{
@@ -140,7 +153,6 @@ def get_author_with_reports(api_url, id, slice=None):
                 reports {slice} {{
                     totalCount
                     edges {{
-                        cursor
                         node {{
                             id
                             date

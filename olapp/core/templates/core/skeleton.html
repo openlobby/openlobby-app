@@ -17,6 +17,7 @@
 
         <form class="form-inline justify-content-center" action="{% url 'index' %}" method="get">
           <input class="form-control form-control-sm" type="search" name="q" id="id_q" value="{{ form.q.value|default_if_none:"" }}">
+          <input type="hidden" name="p" id="id_p" value="1">
           <button class="btn btn-sm mx-2" type="submit">hledej</button>
         </form>
 
