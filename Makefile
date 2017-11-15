@@ -4,9 +4,6 @@ init-env:
 install:
 	pip install -r requirements.txt
 
-test:
-	pytest
-
 run:
 	DEBUG=1 python manage.py runserver 8020
 
@@ -15,3 +12,7 @@ build:
 
 push:
 	docker push openlobby/openlobby-app:latest
+
+release:
+	make build
+	make push
