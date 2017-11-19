@@ -30,10 +30,10 @@ def encode_cursor(num):
     return base64.b64encode(str(num).encode('utf-8')).decode('utf-8')
 
 
-def pythonize_author(author):
-    author['id'] = decode_global_id(author['id'])
-    author['extra'] = json.loads(author['extra'])
-    return author
+def pythonize_user(user):
+    user['id'] = decode_global_id(user['id'])
+    user['extra'] = json.loads(user['extra'])
+    return user
 
 
 def pythonize_report(report):
@@ -42,7 +42,7 @@ def pythonize_report(report):
     report['date'] = arrow.get(report['date'])
     report['published'] = arrow.get(report['published'])
     if 'author' in report:
-        report['author'] = pythonize_author(report['author'])
+        report['author'] = pythonize_user(report['author'])
     return report
 
 
@@ -116,28 +116,28 @@ def get_report(api_url, id):
     return pythonize_report(report)
 
 
-def get_author(api_url, id):
+def get_user(api_url, id):
     query = """
     query {{
         node (id:"{id}") {{
-            ... on Author {{
+            ... on User {{
                 id
                 name
                 extra
             }}
         }}
     }}
-    """.format(id=encode_global_id('Author', id))
+    """.format(id=encode_global_id('User', id))
     data = post_query(api_url, query)
 
-    author = data['node']
-    if author is None:
+    user = data['node']
+    if user is None:
         raise NotFoundError()
 
-    return pythonize_author(author)
+    return pythonize_user(user)
 
 
-def get_author_with_reports(api_url, id, slice):
+def get_user_with_reports(api_url, id, slice):
     if 'after' in slice:
         slice_info = """(first:{first}, after:"{after}")""".format(**slice)
     else:
@@ -146,7 +146,7 @@ def get_author_with_reports(api_url, id, slice):
     query = """
     query {{
         node (id:"{id}") {{
-            ... on Author {{
+            ... on User {{
                 id
                 name
                 extra
@@ -168,22 +168,22 @@ def get_author_with_reports(api_url, id, slice):
             }}
         }}
     }}
-    """.format(id=encode_global_id('Author', id), slice=slice_info)
+    """.format(id=encode_global_id('User', id), slice=slice_info)
     data = post_query(api_url, query)
 
-    author = data['node']
-    if author is None:
+    user = data['node']
+    if user is None:
         raise NotFoundError()
 
-    author = pythonize_author(author)
+    user = pythonize_user(user)
 
-    for edge in author['reports']['edges']:
+    for edge in user['reports']['edges']:
         edge['node'] = pythonize_report(edge['node'])
         # extend report with author info
         edge['node']['author'] = {
-            'id': author['id'],
-            'name': author['name'],
-            'extra': author['extra'],
+            'id': user['id'],
+            'name': user['name'],
+            'extra': user['extra'],
         }
 
-    return author
+    return user

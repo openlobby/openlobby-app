@@ -10,7 +10,7 @@ from .queries import (
     NotFoundError,
     encode_cursor,
     get_report,
-    get_author_with_reports,
+    get_user_with_reports,
     search_reports,
 )
 from .utils import get_page_info
@@ -78,11 +78,11 @@ class ReportView(TemplateView):
         return context
 
 
-class AuthorView(TemplateView):
-    template_name = 'core/author.html'
+class UserView(TemplateView):
+    template_name = 'core/user.html'
 
     def get_context_data(self, **kwargs):
-        context = super(AuthorView, self).get_context_data(**kwargs)
+        context = super(UserView, self).get_context_data(**kwargs)
         id = kwargs['id']
 
         page = int(kwargs.get('page', 1))
@@ -93,22 +93,22 @@ class AuthorView(TemplateView):
             slice = {'first': REPORTS_PER_PAGE}
 
         try:
-            author = get_author_with_reports(settings.OPENLOBBY_API_URL, id, slice)
+            user = get_user_with_reports(settings.OPENLOBBY_API_URL, id, slice)
         except NotFoundError:
             raise Http404()
 
-        context['author'] = author
-        context['reports'] = [edge['node'] for edge in author['reports']['edges']]
-        context['total_reports'] = author['reports']['totalCount']
+        context['user'] = user
+        context['reports'] = [edge['node'] for edge in user['reports']['edges']]
+        context['total_reports'] = user['reports']['totalCount']
 
-        total_pages = math.ceil(author['reports']['totalCount'] / REPORTS_PER_PAGE)
+        total_pages = math.ceil(user['reports']['totalCount'] / REPORTS_PER_PAGE)
 
         pages = []
         for num in range(1, total_pages + 1):
             if num == 1:
-                url = reverse('author', kwargs={'id': id})
+                url = reverse('user', kwargs={'id': id})
             else:
-                url = reverse('author-page', kwargs={'id': id, 'page': num})
+                url = reverse('user-page', kwargs={'id': id, 'page': num})
             pages.append({'num': num, 'url': url, 'active': page == num})
 
         context['page_info'] = get_page_info(page, pages, total_pages)
