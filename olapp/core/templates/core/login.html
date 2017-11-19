@@ -1,0 +1,28 @@
+{% extends "core/skeleton.html" %}
+
+{% block content %}
+
+<div class="my-5">
+  <form class="form" action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+    <div class="form-group row justify-content-md-center">
+      <label for="{{ form.openid_uid.id_for_label }}" class="col-1 col-form-label">{{ form.openid_uid.label }}</label>
+      <div class="col-4">
+        <input type="text" class="form-control{% if form.openid_uid.errors %} is-invalid{% endif %}" name="{{ form.openid_uid.name }}" id="{{ form.openid_uid.id_for_label }}">
+        {% if form.openid_uid.errors %}
+          <div class="invalid-feedback">
+            {{ form.openid_uid.errors }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group row justify-content-md-center">
+      <div class="col-1"></div>
+      <div class="col-4">
+        <button type="submit" class="btn btn-primary">Přihlásit</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

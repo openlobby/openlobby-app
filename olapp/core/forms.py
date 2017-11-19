@@ -10,3 +10,7 @@ class SearchForm(forms.Form):
         value = self.cleaned_data['q']
         value = strip_tags(value)
         return ' '.join(re.findall(r'(\b\w+)', value))
+
+
+class LoginForm(forms.Form):
+    openid_uid = forms.CharField(label='OpenID', required=True)

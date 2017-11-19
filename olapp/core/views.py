@@ -1,18 +1,15 @@
 import urllib.parse
 import math
 from django.conf import settings
+from django.shortcuts import redirect
 from django.http import Http404
 from django.urls import reverse
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 
-from .forms import SearchForm
-from .queries import (
-    NotFoundError,
-    encode_cursor,
-    get_report,
-    get_user_with_reports,
-    search_reports,
-)
+from . import queries
+from . import mutations
+from .forms import SearchForm, LoginForm
 from .utils import get_page_info
 
 
@@ -40,12 +37,12 @@ class IndexView(TemplateView):
             raise Http404
 
         if page > 1:
-            cursor = encode_cursor((page - 1) * REPORTS_PER_PAGE)
+            cursor = queries.encode_cursor((page - 1) * REPORTS_PER_PAGE)
             slice = {'query': query, 'first': REPORTS_PER_PAGE, 'after': cursor}
         else:
             slice = {'query': query, 'first': REPORTS_PER_PAGE}
 
-        search = search_reports(settings.OPENLOBBY_API_URL, slice)
+        search = queries.search_reports(settings.OPENLOBBY_API_URL, slice)
         context['reports'] = [edge['node'] for edge in search['edges']]
         context['total_reports'] = search['totalCount']
 
@@ -72,8 +69,8 @@ class ReportView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ReportView, self).get_context_data(**kwargs)
         try:
-            context['report'] = get_report(settings.OPENLOBBY_API_URL, kwargs['id'])
-        except NotFoundError:
+            context['report'] = queries.get_report(settings.OPENLOBBY_API_URL, kwargs['id'])
+        except queries.NotFoundError:
             raise Http404()
         return context
 
@@ -87,14 +84,14 @@ class UserView(TemplateView):
 
         page = int(kwargs.get('page', 1))
         if page > 1:
-            cursor = encode_cursor((page - 1) * REPORTS_PER_PAGE)
+            cursor = queries.encode_cursor((page - 1) * REPORTS_PER_PAGE)
             slice = {'first': REPORTS_PER_PAGE, 'after': cursor}
         else:
             slice = {'first': REPORTS_PER_PAGE}
 
         try:
-            user = get_user_with_reports(settings.OPENLOBBY_API_URL, id, slice)
-        except NotFoundError:
+            user = queries.get_user_with_reports(settings.OPENLOBBY_API_URL, id, slice)
+        except queries.NotFoundError:
             raise Http404()
 
         context['user'] = user
@@ -114,3 +111,20 @@ class UserView(TemplateView):
         context['page_info'] = get_page_info(page, pages, total_pages)
 
         return context
+
+
+class LoginView(FormView):
+    template_name = 'core/login.html'
+    form_class = LoginForm
+
+    def get_success_url(self):
+        return reverse('index')
+
+    def form_valid(self, form):
+        openid_uid = form.cleaned_data['openid_uid']
+
+        # TODO
+        redirect_uri = reverse('index')
+        data = mutations.login(settings.OPENLOBBY_API_URL, openid_uid, redirect_uri)
+
+        return super(LoginView, self).form_valid(form)
