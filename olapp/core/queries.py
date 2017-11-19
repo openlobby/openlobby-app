@@ -8,11 +8,15 @@ class NotFoundError(Exception):
     pass
 
 
+class QueryError(Exception):
+    pass
+
+
 def post_query(api_url, query):
     response = requests.post(api_url, json={'query': query})
     content = response.json()
     if 'errors' in content:
-        raise Exception(content['errors'])
+        raise QueryError(content['errors'])
     return content['data']
 
 

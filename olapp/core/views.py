@@ -1,9 +1,10 @@
 import urllib.parse
 import math
 from django.conf import settings
-from django.shortcuts import redirect
 from django.http import Http404
+from django.shortcuts import redirect
 from django.urls import reverse
+from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
@@ -118,13 +119,23 @@ class LoginView(FormView):
     form_class = LoginForm
 
     def get_success_url(self):
-        return reverse('index')
+        return self.authorization_url
 
     def form_valid(self, form):
         openid_uid = form.cleaned_data['openid_uid']
-
-        # TODO
-        redirect_uri = reverse('index')
+        redirect_uri = urllib.parse.urljoin(settings.APP_URL, reverse('login-redirect'))
         data = mutations.login(settings.OPENLOBBY_API_URL, openid_uid, redirect_uri)
-
+        self.authorization_url = data['authorizationUrl']
         return super(LoginView, self).form_valid(form)
+
+
+class LoginRedirectView(View):
+
+    def get(self, request):
+        query_string = request.META['QUERY_STRING']
+        data = mutations.login_redirect(settings.OPENLOBBY_API_URL, query_string)
+        if data['success']:
+            print('\nLOGIN SUCCESS\n')
+        else:
+            print('\nLOGIN FAIL\n')
+        return redirect('index')
