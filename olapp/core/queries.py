@@ -12,8 +12,12 @@ class QueryError(Exception):
     pass
 
 
-def post_query(api_url, query):
-    response = requests.post(api_url, json={'query': query})
+def post_query(api_url, query, *, token=None):
+    if token is not None:
+        headers = {'Authorization': 'Bearer {}'.format(token)}
+    else:
+        headers = {}
+    response = requests.post(api_url, json={'query': query}, headers=headers)
     content = response.json()
     if 'errors' in content:
         raise QueryError(content['errors'])
@@ -191,3 +195,24 @@ def get_user_with_reports(api_url, id, slice):
         }
 
     return user
+
+
+def get_viewer(api_url, *, token=None):
+    query = """
+    query {
+        viewer {
+            id
+            name
+            email
+            openidUid
+            extra
+        }
+    }
+    """
+    data = post_query(api_url, query, token=token)
+
+    user = data['viewer']
+    if user is None:
+        raise NotFoundError()
+
+    return pythonize_user(user)

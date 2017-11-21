@@ -138,6 +138,22 @@ class LoginRedirectView(View):
         token = data['accessToken']
         payload = jwt.decode(token, verify=False)
         max_age = payload['exp'] - time.time()
-        response = HttpResponseRedirect(reverse('index'))
-        response.set_cookie('access_token', token, max_age=max_age, httponly=True)
+        response = HttpResponseRedirect(reverse('account'))
+        response.set_cookie(settings.ACCESS_TOKEN_COOKIE, token, max_age=max_age)
         return response
+
+
+class AccountView(TemplateView):
+    template_name = 'core/account.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AccountView, self).get_context_data(**kwargs)
+        token = self.request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
+
+        try:
+            user = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        except queries.NotFoundError:
+            raise Http404()
+
+        context['user'] = user
+        return context
