@@ -1,12 +1,13 @@
-import urllib.parse
-import math
 from django.conf import settings
-from django.http import Http404
-from django.shortcuts import redirect
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
+import jwt
+import math
+import time
+import urllib.parse
 
 from . import queries
 from . import mutations
@@ -134,8 +135,9 @@ class LoginRedirectView(View):
     def get(self, request):
         query_string = request.META['QUERY_STRING']
         data = mutations.login_redirect(settings.OPENLOBBY_API_URL, query_string)
-        if data['success']:
-            print('\nLOGIN SUCCESS\n')
-        else:
-            print('\nLOGIN FAIL\n')
-        return redirect('index')
+        token = data['accessToken']
+        payload = jwt.decode(token, verify=False)
+        max_age = payload['exp'] - time.time()
+        response = HttpResponseRedirect(reverse('index'))
+        response.set_cookie('access_token', token, max_age=max_age, httponly=True)
+        return response

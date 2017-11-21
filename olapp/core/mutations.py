@@ -29,7 +29,7 @@ def login_redirect(api_url, query_string):
     mutation = """
     mutation {{
         loginRedirect (input: {{ queryString: "{query_string}" }}) {{
-            success
+            accessToken
         }}
     }}
     """.format(query_string=query_string)
