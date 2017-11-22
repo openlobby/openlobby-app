@@ -9,6 +9,10 @@ ERROR_CLASS = 'is-invalid'
 
 
 class ErrorClassMixin:
+    """
+    Adds error CSS class to invalid fields.
+    Mixin must be used before forms.Form
+    """
 
     def is_valid(self):
         valid = super(ErrorClassMixin, self).is_valid()
@@ -26,7 +30,7 @@ class SearchForm(forms.Form):
         return extract_text(self.cleaned_data['q'])
 
 
-class LoginForm(forms.Form, ErrorClassMixin):
+class LoginForm(ErrorClassMixin, forms.Form):
     openid_uid = forms.CharField(
         label='OpenID',
         help_text='Váš unikátní OpenID identifikátor, např.: uzivatel@mojeid.cz',
@@ -35,7 +39,7 @@ class LoginForm(forms.Form, ErrorClassMixin):
     )
 
 
-class NewReportForm(forms.Form, ErrorClassMixin):
+class NewReportForm(ErrorClassMixin, forms.Form):
     title = forms.CharField(
         label='titulek',
         widget=forms.TextInput(attrs={'class': INPUT_CLASS}),

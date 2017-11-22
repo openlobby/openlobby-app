@@ -2,6 +2,7 @@ from django.conf.urls import url
 from olapp.core.views import (
     AccountView,
     NewReportView,
+    NewReportSuccessView,
     IndexView,
     LoginView,
     LoginRedirectView,
@@ -15,6 +16,7 @@ urlpatterns = [
     url(r'^login-redirect/$', LoginRedirectView.as_view(), name='login-redirect'),
     url(r'^account/$', AccountView.as_view(), name='account'),
     url(r'^new-report/$', NewReportView.as_view(), name='new-report'),
+    url(r'^new-report/success/$', NewReportSuccessView.as_view(), name='new-report-success'),
     url(r'^report/(?P<id>[0-9A-Za-z-_]+)/$', ReportView.as_view(), name='report'),
     url(r'^user/(?P<id>[0-9A-Za-z-_]+)/$', UserView.as_view(), name='user'),
     url(r'^user/(?P<id>[0-9A-Za-z-_]+)/(?P<page>[0-9]+)/$', UserView.as_view(), name='user-page'),

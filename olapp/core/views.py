@@ -171,7 +171,7 @@ class NewReportView(FormView):
     form_class = NewReportForm
 
     def get_success_url(self):
-        return reverse('index')
+        return reverse('new-report-success')
 
     def form_valid(self, form):
         token = get_token(self.request)
@@ -180,6 +180,16 @@ class NewReportView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(NewReportView, self).get_context_data(**kwargs)
+        token = get_token(self.request)
+        context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        return context
+
+
+class NewReportSuccessView(TemplateView):
+    template_name = 'core/new_report_success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(NewReportSuccessView, self).get_context_data(**kwargs)
         token = get_token(self.request)
         context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
         return context

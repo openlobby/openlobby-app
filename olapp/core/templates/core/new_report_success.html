@@ -1,0 +1,9 @@
+{% extends "core/skeleton.html" %}
+
+{% block content %}
+
+<div class="alert alert-success text-center my-4" role="alert">
+  Schůzka byla uložena v pořádku. Během chvilky bude publikována v registru.<br>Pokračujte na <a href="{% url 'index' %}">nejnovější schůzky</a>.
+</div>
+
+{% endblock %}
