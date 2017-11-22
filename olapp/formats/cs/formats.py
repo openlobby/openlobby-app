@@ -1,0 +1,5 @@
+DATE_FORMAT = 'j. n. Y'
+TIME_FORMAT = 'G:i'
+DATETIME_FORMAT = 'j. n. Y G:i'
+SHORT_DATE_FORMAT = 'j.n.Y'
+SHORT_DATETIME_FORMAT = 'j.n.Y G:i'

@@ -1,0 +1,28 @@
+{% extends "core/skeleton.html" %}
+
+{% block content %}
+
+<div class="my-5">
+  <form class="form" action="{% url 'new-report' %}" method="post">
+    {% csrf_token %}
+    {% include "core/form_field_snippet.html" with field=form.date %}
+    {% include "core/form_field_snippet.html" with field=form.title %}
+    {% include "core/form_field_snippet.html" with field=form.body %}
+    {% include "core/form_field_snippet.html" with field=form.received_benefit %}
+    {% include "core/form_field_snippet.html" with field=form.provided_benefit %}
+    <div class="form-group row">
+      <div class="col-2"></div>
+      <div class="col-10">
+        <button type="submit" class="btn btn-primary">uložit</button>
+      </div>
+    </div>
+  </form>
+  <div class="row">
+    <div class="col-2"></div>
+    <div class="col-10 mt-4">
+      <em class="text-muted">Zadávejte prostý text. HTML tagy nejsou povoleny a budou z textu vyjmuty.</em>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

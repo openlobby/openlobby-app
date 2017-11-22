@@ -2,7 +2,7 @@
   <div class="col-9 p-0 border rounded-left">
 
     <div class="d-flex justify-content-start py-1 border border-left-0 border-right-0 border-top-0 bg-light">
-      <div class="pl-3 pr-2">{{ report.date|date:"j. n. Y" }}</div>
+      <div class="pl-3 pr-2">{{ report.date|date:"DATE_FORMAT" }}</div>
       <div class="px-2"><b><a href="{% url 'report' id=report.id %}">{{ report.title }}</a></b></div>
     </div>
 
@@ -42,7 +42,7 @@
     <div class="mt-auto py-1">
     {% endif %}
       <span class="small text-muted">
-        publikováno: {{ report.published|date:"j. n. Y H:i" }}
+        publikováno: {{ report.published|date:"DATETIME_FORMAT" }}
         <a class="ml-2" href="{% url 'report' id=report.id %}">permalink</a>
       </span>
     </div>

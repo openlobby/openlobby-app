@@ -1,16 +1,4 @@
-import requests
-
-
-class MutationError(Exception):
-    pass
-
-
-def post_mutation(api_url, mutation):
-    response = requests.post(api_url, json={'query': mutation})
-    content = response.json()
-    if 'errors' in content:
-        raise MutationError(content['errors'])
-    return content['data']
+from .queries import post_query
 
 
 def login(api_url, openid_uid, redirect_uri):
@@ -21,7 +9,7 @@ def login(api_url, openid_uid, redirect_uri):
         }}
     }}
     """.format(openid_uid=openid_uid, redirect_uri=redirect_uri)
-    data = post_mutation(api_url, mutation)
+    data = post_query(api_url, mutation)
     return data['login']
 
 
@@ -33,5 +21,27 @@ def login_redirect(api_url, query_string):
         }}
     }}
     """.format(query_string=query_string)
-    data = post_mutation(api_url, mutation)
+    data = post_query(api_url, mutation)
     return data['loginRedirect']
+
+
+def new_report(api_url, report, *, token=None):
+    mutation = """
+    mutation newReport ($input: NewReportInput!) {
+        newReport (input: $input) {
+            report {
+                id
+            }
+        }
+    }
+    """
+    input = {
+        'title': report['title'],
+        'body': report['body'],
+        'receivedBenefit': report['received_benefit'],
+        'providedBenefit': report['provided_benefit'],
+        'date': report['date'].isoformat(),
+    }
+    variables = {'input': input}
+    data = post_query(api_url, mutation, variables=variables, token=token)
+    return data['newReport']['report']

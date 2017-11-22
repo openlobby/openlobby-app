@@ -11,7 +11,7 @@ import urllib.parse
 
 from . import queries
 from . import mutations
-from .forms import SearchForm, LoginForm
+from .forms import SearchForm, LoginForm, NewReportForm
 from .utils import get_page_info
 
 
@@ -162,11 +162,24 @@ class AccountView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AccountView, self).get_context_data(**kwargs)
         token = get_token(self.request)
+        context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        return context
 
-        try:
-            viewer = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
-        except queries.NotFoundError:
-            raise Http404()
 
-        context['viewer'] = viewer
+class NewReportView(FormView):
+    template_name = 'core/new_report.html'
+    form_class = NewReportForm
+
+    def get_success_url(self):
+        return reverse('index')
+
+    def form_valid(self, form):
+        token = get_token(self.request)
+        mutations.new_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
+        return super(NewReportView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(NewReportView, self).get_context_data(**kwargs)
+        token = get_token(self.request)
+        context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
         return context

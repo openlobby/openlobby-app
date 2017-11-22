@@ -4,23 +4,26 @@ import json
 import base64
 
 
+class GraphQLError(Exception):
+    pass
+
+
 class NotFoundError(Exception):
     pass
 
 
-class QueryError(Exception):
-    pass
-
-
-def post_query(api_url, query, token=None):
+def post_query(api_url, query, *, variables=None, token=None):
     if token is not None:
         headers = {'Authorization': 'Bearer {}'.format(token)}
     else:
         headers = {}
-    response = requests.post(api_url, json={'query': query}, headers=headers)
+
+    payload = {'query': query, 'variables': variables}
+    response = requests.post(api_url, json=payload, headers=headers)
     content = response.json()
+
     if 'errors' in content:
-        raise QueryError(content['errors'])
+        raise GraphQLError(content['errors'])
     return content['data']
 
 
@@ -47,8 +50,8 @@ def pythonize_user(user):
 def pythonize_report(report):
     report['id'] = decode_global_id(report['id'])
     report['extra'] = json.loads(report['extra'])
-    report['date'] = arrow.get(report['date'])
-    report['published'] = arrow.get(report['published'])
+    report['date'] = arrow.get(report['date']).date
+    report['published'] = arrow.get(report['published']).datetime
     if 'author' in report:
         report['author'] = pythonize_user(report['author'])
     return report
@@ -103,7 +106,7 @@ def search_reports(api_url, slice, *, token=None, viewer=VIEWER):
         {viewer}
     }}
     """.format(slice=slice_info, viewer=viewer)
-    data = post_query(api_url, query, token)
+    data = post_query(api_url, query, token=token)
     search = data['searchReports']
 
     for edge in search['edges']:
@@ -136,7 +139,7 @@ def get_report(api_url, id, *, token=None, viewer=VIEWER):
         {viewer}
     }}
     """.format(id=encode_global_id('Report', id), viewer=viewer)
-    data = post_query(api_url, query, token)
+    data = post_query(api_url, query, token=token)
 
     report = data['node']
     if report is None:
@@ -159,7 +162,7 @@ def get_user(api_url, id, *, token=None, viewer=VIEWER):
         {viewer}
     }}
     """.format(id=encode_global_id('User', id), viewer=viewer)
-    data = post_query(api_url, query, token)
+    data = post_query(api_url, query, token=token)
 
     user = data['node']
     if user is None:
@@ -202,7 +205,7 @@ def get_user_with_reports(api_url, id, slice, *, token=None, viewer=VIEWER):
         {viewer}
     }}
     """.format(id=encode_global_id('User', id), slice=slice_info, viewer=viewer)
-    data = post_query(api_url, query, token)
+    data = post_query(api_url, query, token=token)
 
     user = data['node']
     if user is None:
@@ -229,10 +232,6 @@ def get_viewer(api_url, *, token=None, viewer=VIEWER):
         {viewer}
     }}
     """.format(viewer=viewer)
-    data = post_query(api_url, query, token)
+    data = post_query(api_url, query, token=token)
 
-    viewer = get_viewer_from_data(data)
-    if viewer is None:
-        raise NotFoundError()
-
-    return viewer
+    return get_viewer_from_data(data)
