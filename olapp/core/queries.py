@@ -12,7 +12,7 @@ class QueryError(Exception):
     pass
 
 
-def post_query(api_url, query, *, token=None):
+def post_query(api_url, query, token=None):
     if token is not None:
         headers = {'Authorization': 'Bearer {}'.format(token)}
     else:
@@ -54,7 +54,25 @@ def pythonize_report(report):
     return report
 
 
-def search_reports(api_url, slice):
+def get_viewer_from_data(data):
+    viewer = data.get('viewer')
+    if viewer is None:
+        return None
+    return pythonize_user(viewer)
+
+
+VIEWER = """
+    viewer {
+        id
+        name
+        email
+        openidUid
+        extra
+    }
+"""
+
+
+def search_reports(api_url, slice, *, token=None, viewer=VIEWER):
     if 'after' in slice:
         slice_info = """(query:"{query}", first:{first}, after:"{after}")""".format(**slice)
     else:
@@ -82,18 +100,20 @@ def search_reports(api_url, slice):
                 }}
             }}
         }}
+        {viewer}
     }}
-    """.format(slice=slice_info)
-    data = post_query(api_url, query)
+    """.format(slice=slice_info, viewer=viewer)
+    data = post_query(api_url, query, token)
     search = data['searchReports']
 
     for edge in search['edges']:
         edge['node'] = pythonize_report(edge['node'])
 
-    return search
+    viewer = get_viewer_from_data(data)
+    return search, viewer
 
 
-def get_report(api_url, id):
+def get_report(api_url, id, *, token=None, viewer=VIEWER):
     query = """
     query {{
         node (id:"{id}") {{
@@ -113,18 +133,20 @@ def get_report(api_url, id):
                 }}
             }}
         }}
+        {viewer}
     }}
-    """.format(id=encode_global_id('Report', id))
-    data = post_query(api_url, query)
+    """.format(id=encode_global_id('Report', id), viewer=viewer)
+    data = post_query(api_url, query, token)
 
     report = data['node']
     if report is None:
         raise NotFoundError()
 
-    return pythonize_report(report)
+    viewer = get_viewer_from_data(data)
+    return pythonize_report(report), viewer
 
 
-def get_user(api_url, id):
+def get_user(api_url, id, *, token=None, viewer=VIEWER):
     query = """
     query {{
         node (id:"{id}") {{
@@ -134,18 +156,20 @@ def get_user(api_url, id):
                 extra
             }}
         }}
+        {viewer}
     }}
-    """.format(id=encode_global_id('User', id))
-    data = post_query(api_url, query)
+    """.format(id=encode_global_id('User', id), viewer=viewer)
+    data = post_query(api_url, query, token)
 
     user = data['node']
     if user is None:
         raise NotFoundError()
 
-    return pythonize_user(user)
+    viewer = get_viewer_from_data(data)
+    return pythonize_user(user), viewer
 
 
-def get_user_with_reports(api_url, id, slice):
+def get_user_with_reports(api_url, id, slice, *, token=None, viewer=VIEWER):
     if 'after' in slice:
         slice_info = """(first:{first}, after:"{after}")""".format(**slice)
     else:
@@ -175,9 +199,10 @@ def get_user_with_reports(api_url, id, slice):
                 }}
             }}
         }}
+        {viewer}
     }}
-    """.format(id=encode_global_id('User', id), slice=slice_info)
-    data = post_query(api_url, query)
+    """.format(id=encode_global_id('User', id), slice=slice_info, viewer=viewer)
+    data = post_query(api_url, query, token)
 
     user = data['node']
     if user is None:
@@ -194,25 +219,20 @@ def get_user_with_reports(api_url, id, slice):
             'extra': user['extra'],
         }
 
-    return user
+    viewer = get_viewer_from_data(data)
+    return user, viewer
 
 
-def get_viewer(api_url, *, token=None):
+def get_viewer(api_url, *, token=None, viewer=VIEWER):
     query = """
-    query {
-        viewer {
-            id
-            name
-            email
-            openidUid
-            extra
-        }
-    }
-    """
-    data = post_query(api_url, query, token=token)
+    query {{
+        {viewer}
+    }}
+    """.format(viewer=viewer)
+    data = post_query(api_url, query, token)
 
-    user = data['viewer']
-    if user is None:
+    viewer = get_viewer_from_data(data)
+    if viewer is None:
         raise NotFoundError()
 
-    return pythonize_user(user)
+    return viewer

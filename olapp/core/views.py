@@ -18,11 +18,16 @@ from .utils import get_page_info
 REPORTS_PER_PAGE = 10
 
 
+def get_token(request):
+    return request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
+
+
 class IndexView(TemplateView):
     template_name = 'core/index.html'
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
+        token = get_token(self.request)
         query = ''
 
         form = SearchForm(self.request.GET)
@@ -44,7 +49,8 @@ class IndexView(TemplateView):
         else:
             slice = {'query': query, 'first': REPORTS_PER_PAGE}
 
-        search = queries.search_reports(settings.OPENLOBBY_API_URL, slice)
+        search, viewer = queries.search_reports(settings.OPENLOBBY_API_URL, slice, token=token)
+        context['viewer'] = viewer
         context['reports'] = [edge['node'] for edge in search['edges']]
         context['total_reports'] = search['totalCount']
 
@@ -70,10 +76,15 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ReportView, self).get_context_data(**kwargs)
+        token = get_token(self.request)
+
         try:
-            context['report'] = queries.get_report(settings.OPENLOBBY_API_URL, kwargs['id'])
+            report, viewer = queries.get_report(settings.OPENLOBBY_API_URL, kwargs['id'], token=token)
         except queries.NotFoundError:
             raise Http404()
+
+        context['report'] = report
+        context['viewer'] = viewer
         return context
 
 
@@ -82,6 +93,7 @@ class UserView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(UserView, self).get_context_data(**kwargs)
+        token = get_token(self.request)
         id = kwargs['id']
 
         page = int(kwargs.get('page', 1))
@@ -92,11 +104,12 @@ class UserView(TemplateView):
             slice = {'first': REPORTS_PER_PAGE}
 
         try:
-            user = queries.get_user_with_reports(settings.OPENLOBBY_API_URL, id, slice)
+            user, viewer = queries.get_user_with_reports(settings.OPENLOBBY_API_URL, id, slice, token=token)
         except queries.NotFoundError:
             raise Http404()
 
         context['user'] = user
+        context['viewer'] = viewer
         context['reports'] = [edge['node'] for edge in user['reports']['edges']]
         context['total_reports'] = user['reports']['totalCount']
 
@@ -148,12 +161,12 @@ class AccountView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AccountView, self).get_context_data(**kwargs)
-        token = self.request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
+        token = get_token(self.request)
 
         try:
-            user = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+            viewer = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
         except queries.NotFoundError:
             raise Http404()
 
-        context['user'] = user
+        context['viewer'] = viewer
         return context
