@@ -4,6 +4,21 @@ from django import forms
 from .sanitizers import extract_text, strip_all_tags
 
 
+INPUT_CLASS = 'form-control form-control-sm'
+ERROR_CLASS = 'is-invalid'
+
+
+class ErrorClassMixin:
+
+    def is_valid(self):
+        valid = super(ErrorClassMixin, self).is_valid()
+        for f in self.errors:
+            self.fields[f].widget.attrs.update({
+                'class': self.fields[f].widget.attrs.get('class', '') + ' ' + ERROR_CLASS,
+            })
+        return valid
+
+
 class SearchForm(forms.Form):
     q = forms.CharField(label='Query', required=False)
 
@@ -11,14 +26,16 @@ class SearchForm(forms.Form):
         return extract_text(self.cleaned_data['q'])
 
 
-class LoginForm(forms.Form):
-    openid_uid = forms.CharField(label='OpenID', required=True)
+class LoginForm(forms.Form, ErrorClassMixin):
+    openid_uid = forms.CharField(
+        label='OpenID',
+        help_text='Váš unikátní OpenID identifikátor, např.: uzivatel@mojeid.cz',
+        required=True,
+        widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
+    )
 
 
-class NewReportForm(forms.Form):
-    INPUT_CLASS = 'form-control form-control-sm'
-    ERROR_CLASS = 'is-invalid'
-
+class NewReportForm(forms.Form, ErrorClassMixin):
     title = forms.CharField(
         label='titulek',
         widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
@@ -42,14 +59,6 @@ class NewReportForm(forms.Form):
         initial=date.today,
         widget=forms.DateInput(attrs={'class': INPUT_CLASS + ' col-md-2'}),
     )
-
-    def is_valid(self):
-        valid = super(NewReportForm, self).is_valid()
-        for f in self.errors:
-            self.fields[f].widget.attrs.update({
-                'class': self.fields[f].widget.attrs.get('class', '') + ' ' + self.ERROR_CLASS,
-            })
-        return valid
 
     def clean_title(self):
         return strip_all_tags(self.cleaned_data['title'])

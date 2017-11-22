@@ -6,14 +6,11 @@
   <form class="form" action="{% url 'login' %}" method="post">
     {% csrf_token %}
     <div class="form-group row justify-content-md-center">
-      <label for="{{ form.openid_uid.id_for_label }}" class="col-1 col-form-label">{{ form.openid_uid.label }}</label>
+      <label for="{{ form.openid_uid.id_for_label }}" class="col-1 col-form-label text-right">{{ form.openid_uid.label }}</label>
       <div class="col-4">
-        <input type="text" class="form-control{% if form.openid_uid.errors %} is-invalid{% endif %}" name="{{ form.openid_uid.name }}" id="{{ form.openid_uid.id_for_label }}">
-        {% if form.openid_uid.errors %}
-          <div class="invalid-feedback">
-            {{ form.openid_uid.errors }}
-          </div>
-        {% endif %}
+        {{ form.openid_uid }}
+        <small class="form-text text-muted">{{ form.openid_uid.help_text }}</small>
+        <div class="invalid-feedback">{{ form.openid_uid.errors }}</div>
       </div>
     </div>
     <div class="form-group row justify-content-md-center">
@@ -23,6 +20,10 @@
       </div>
     </div>
   </form>
+
+  <div class="mt-5 text-center text-muted">
+    Prvním přihlášením se vám vytvoří uživatelský účet.<br>Nemáte-li OpenID, založte si ho například na <a href="http://mojeid.cz">mojeid.cz</a>
+  </div>
 </div>
 
 {% endblock %}
