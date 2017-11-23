@@ -3,6 +3,7 @@ init-env:
 
 install:
 	pip install -r requirements.txt
+	pip install -e .
 
 run:
 	DEBUG=1 SECRET_KEY=localapp python manage.py runserver 8020
