@@ -3,26 +3,26 @@
 
     <div class="d-flex justify-content-start py-1 border border-left-0 border-right-0 border-top-0 bg-light">
       <div class="pl-3 pr-2">{{ report.date|date:"DATE_FORMAT" }}</div>
-      <div class="px-2"><b><a href="{% url 'report' id=report.id %}">{{ report.title }}</a></b></div>
+      <div class="px-2"><b><a href="{% url 'report' id=report.id %}">{{ report.title|safe }}</a></b></div>
     </div>
 
     <div class="d-flex">
       <div class="px-3 pt-2">
-        {{ report.body|linebreaks }}
+        {{ report.body|safe|linebreaks }}
       </div>
     </div>
 
     {% if report.receivedBenefit %}
       <div class="d-flex border border-left-0 border-right-0 border-bottom-0 bg-light">
         <div class="px-3 py-1 text-right" style="min-width: 11em"><small class="text-muted">přijaté výhody:</small></div>
-        <div class="py-1">{{ report.receivedBenefit }}</div>
+        <div class="py-1">{{ report.receivedBenefit|safe }}</div>
       </div>
     {% endif %}
 
     {% if report.providedBenefit %}
       <div class="d-flex border border-left-0 border-right-0 border-bottom-0 bg-light">
         <div class="px-3 py-1 text-right" style="min-width: 11em"><small class="text-muted">poskytnuté výhody:</small></div>
-        <div class="py-1">{{ report.providedBenefit }}</div>
+        <div class="py-1">{{ report.providedBenefit|safe }}</div>
       </div>
     {% endif %}
 

@@ -77,9 +77,9 @@ VIEWER = """
 
 def search_reports(api_url, slice, *, token=None, viewer=VIEWER):
     if 'after' in slice:
-        slice_info = """(query:"{query}", first:{first}, after:"{after}")""".format(**slice)
+        slice_info = """(query:"{query}", highlight:true, first:{first}, after:"{after}")""".format(**slice)
     else:
-        slice_info = """(query:"{query}", first:{first})""".format(**slice)
+        slice_info = """(query:"{query}", highlight:true, first:{first})""".format(**slice)
 
     query = """
     query {{
