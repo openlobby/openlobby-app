@@ -38,3 +38,7 @@ Application development server assumes that you have
 running on `http://localhost:8010`. You can override this address in environment
 variable `OPENLOBBY_SERVER_DSN`. E.g.
 `OPENLOBBY_SERVER_DSN=http://my-server:8010 make run`
+
+### Testing
+
+Run: `pytest`
