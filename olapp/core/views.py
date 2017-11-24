@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views import View
@@ -41,7 +42,7 @@ class IndexView(TemplateView):
         try:
             page = int(self.request.GET.get('p', 1))
         except ValueError:
-            raise Http404
+            raise SuspiciousOperation
 
         if page > 1:
             cursor = queries.encode_cursor((page - 1) * REPORTS_PER_PAGE)
@@ -50,6 +51,7 @@ class IndexView(TemplateView):
             slice = {'query': query, 'first': REPORTS_PER_PAGE}
 
         search, viewer = queries.search_reports(settings.OPENLOBBY_API_URL, slice, token=token)
+
         context['viewer'] = viewer
         context['reports'] = [edge['node'] for edge in search['edges']]
         context['total_reports'] = search['totalCount']
@@ -81,7 +83,7 @@ class ReportView(TemplateView):
         try:
             report, viewer = queries.get_report(settings.OPENLOBBY_API_URL, kwargs['id'], token=token)
         except queries.NotFoundError:
-            raise Http404()
+            raise Http404
 
         context['report'] = report
         context['viewer'] = viewer
@@ -106,7 +108,7 @@ class UserView(TemplateView):
         try:
             user, viewer = queries.get_user_with_reports(settings.OPENLOBBY_API_URL, id, slice, token=token)
         except queries.NotFoundError:
-            raise Http404()
+            raise Http404
 
         context['user'] = user
         context['viewer'] = viewer
@@ -148,9 +150,12 @@ class LoginRedirectView(View):
     def get(self, request):
         query_string = request.META['QUERY_STRING']
         data = mutations.login_redirect(settings.OPENLOBBY_API_URL, query_string)
+
+        # get cookie max_age from token
         token = data['accessToken']
         payload = jwt.decode(token, verify=False)
         max_age = payload['exp'] - time.time()
+
         response = HttpResponseRedirect(reverse('account'))
         response.set_cookie(settings.ACCESS_TOKEN_COOKIE, token, max_age=max_age)
         return response

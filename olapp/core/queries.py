@@ -4,6 +4,10 @@ import json
 import base64
 
 
+class ServiceUnavailableError(Exception):
+    pass
+
+
 class GraphQLError(Exception):
     pass
 
@@ -19,11 +23,17 @@ def post_query(api_url, query, *, variables=None, token=None):
         headers = {}
 
     payload = {'query': query, 'variables': variables}
-    response = requests.post(api_url, json=payload, headers=headers)
+
+    try:
+        response = requests.post(api_url, json=payload, headers=headers)
+    except requests.exceptions.RequestException:
+        raise ServiceUnavailableError
+
     content = response.json()
 
     if 'errors' in content:
         raise GraphQLError(content['errors'])
+
     return content['data']
 
 
