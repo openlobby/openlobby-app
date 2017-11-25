@@ -6,14 +6,19 @@ This application comunicates with Open Lobby Server over
 [GraphQL API](http://graphql.org). The server is available in repository
 [openlobby/openlobby-server](https://github.com/openlobby/openlobby-server).
 
+## Configuration
+
+Configuration is done by environment variables:
+ - `SECRET_KEY` - long random secret string (required)
+ - `OPENLOBBY_SERVER_DSN` - Open Lobby Server DSN (default: `http://localhost:8010`)
+ - `APP_URL` - URL where you run application (default: `http://localhost:8020`)
+
 ## Docker
 
 Docker image is at Docker Hub
 [openlobby/openlobby-app](https://hub.docker.com/r/openlobby/openlobby-app/).
-It exposes web application on port 8020. You have to give it some environment
-variables:
- - `SECRET_KEY` - long random secret string
- - `OPENLOBBY_SERVER_DSN` - if not provided then default is `http://localhost:8010`
+It exposes web application on port 8020. You should provide it environment
+variables for configuration (at least `SECRET_KEY`).
 
 ## Demo
 
