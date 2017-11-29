@@ -63,6 +63,16 @@ class NewReportForm(ErrorClassMixin, forms.Form):
         initial=date.today,
         widget=forms.DateInput(attrs={'class': INPUT_CLASS + ' col-md-2'}),
     )
+    our_participants = forms.CharField(
+        label='naši účastníci',
+        required=False,
+        widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
+    )
+    other_participants = forms.CharField(
+        label='ostatní účastníci',
+        required=False,
+        widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
+    )
 
     def clean_title(self):
         return strip_all_tags(self.cleaned_data['title'])
@@ -75,3 +85,9 @@ class NewReportForm(ErrorClassMixin, forms.Form):
 
     def clean_provided_benefit(self):
         return strip_all_tags(self.cleaned_data['provided_benefit'])
+
+    def clean_our_participants(self):
+        return strip_all_tags(self.cleaned_data['our_participants'])
+
+    def clean_other_participants(self):
+        return strip_all_tags(self.cleaned_data['other_participants'])

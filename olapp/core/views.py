@@ -184,10 +184,17 @@ class NewReportView(FormView):
         return super(NewReportView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        context = super(NewReportView, self).get_context_data(**kwargs)
         token = get_token(self.request)
-        context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        self.viewer = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        context = super(NewReportView, self).get_context_data(**kwargs)
+        context['viewer'] = self.viewer
         return context
+
+    def get_initial(self):
+        data = super(NewReportView, self).get_initial()
+        if hasattr(self, 'viewer'):
+            data['our_participants'] = self.viewer['name']
+        return data
 
 
 class NewReportSuccessView(TemplateView):

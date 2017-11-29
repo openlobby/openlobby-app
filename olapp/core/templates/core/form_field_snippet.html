@@ -2,6 +2,7 @@
   <label for="{{ field.id_for_label }}" class="col-2 col-form-label text-right">{{ field.label }}</label>
   <div class="col-10">
     {{ field }}
+    <small class="form-text text-muted">{{ field.help_text }}</small>
     <div class="invalid-feedback">{{ field.errors }}</div>
   </div>
 </div>

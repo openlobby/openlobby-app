@@ -104,6 +104,8 @@ def search_reports(api_url, slice, *, token=None, viewer=VIEWER):
                     body
                     receivedBenefit
                     providedBenefit
+                    ourParticipants
+                    otherParticipants
                     extra
                     author {{
                         id
@@ -138,6 +140,8 @@ def get_report(api_url, id, *, token=None, viewer=VIEWER):
                 body
                 receivedBenefit
                 providedBenefit
+                ourParticipants
+                otherParticipants
                 extra
                 author {{
                     id
@@ -206,6 +210,8 @@ def get_user_with_reports(api_url, id, slice, *, token=None, viewer=VIEWER):
                             body
                             receivedBenefit
                             providedBenefit
+                            ourParticipants
+                            otherParticipants
                             extra
                         }}
                     }}

@@ -26,6 +26,20 @@
       </div>
     {% endif %}
 
+    {% if report.ourParticipants %}
+      <div class="d-flex border border-left-0 border-right-0 border-bottom-0 bg-light">
+        <div class="px-3 py-1 text-right" style="min-width: 11em"><small class="text-muted">naši účastníci:</small></div>
+        <div class="py-1">{{ report.ourParticipants|safe }}</div>
+      </div>
+    {% endif %}
+
+    {% if report.otherParticipants %}
+      <div class="d-flex border border-left-0 border-right-0 border-bottom-0 bg-light">
+        <div class="px-3 py-1 text-right" style="min-width: 11em"><small class="text-muted">ostatní účastníci:</small></div>
+        <div class="py-1">{{ report.otherParticipants|safe }}</div>
+      </div>
+    {% endif %}
+
   </div>
   <div class="col-3 pt-2 border border-left-0 rounded-right d-flex flex-column bg-light">
 

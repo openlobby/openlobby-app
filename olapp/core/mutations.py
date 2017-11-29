@@ -41,6 +41,8 @@ def new_report(api_url, report, *, token=None):
         'receivedBenefit': report['received_benefit'],
         'providedBenefit': report['provided_benefit'],
         'date': report['date'].isoformat(),
+        'ourParticipants': report['our_participants'],
+        'otherParticipants': report['other_participants'],
     }
     variables = {'input': input}
     data = post_query(api_url, mutation, variables=variables, token=token)
