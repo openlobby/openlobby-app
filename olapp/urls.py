@@ -6,6 +6,7 @@ from olapp.core.views import (
     IndexView,
     LoginView,
     LoginRedirectView,
+    LogoutView,
     ReportView,
     UserView,
 )
@@ -14,6 +15,7 @@ urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^login-redirect/$', LoginRedirectView.as_view(), name='login-redirect'),
+    url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^account/$', AccountView.as_view(), name='account'),
     url(r'^new-report/$', NewReportView.as_view(), name='new-report'),
     url(r'^new-report/success/$', NewReportSuccessView.as_view(), name='new-report-success'),

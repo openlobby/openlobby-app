@@ -25,6 +25,18 @@ def login_redirect(api_url, query_string):
     return data['loginRedirect']
 
 
+def logout(api_url, *, token=None):
+    mutation = """
+    mutation {
+        logout (input: {}) {
+            success
+        }
+    }
+    """
+    data = post_query(api_url, mutation, token=token)
+    return data['logout']['success']
+
+
 def new_report(api_url, report, *, token=None):
     mutation = """
     mutation newReport ($input: NewReportInput!) {

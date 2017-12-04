@@ -161,6 +161,19 @@ class LoginRedirectView(View):
         return response
 
 
+class LogoutView(View):
+
+    def get(self, request):
+        token = get_token(self.request)
+        success = mutations.logout(settings.OPENLOBBY_API_URL, token=token)
+        if success:
+            response = HttpResponseRedirect(reverse('index'))
+            response.delete_cookie(settings.ACCESS_TOKEN_COOKIE)
+        else:
+            response = HttpResponseRedirect(reverse('account'))
+        return response
+
+
 class AccountView(TemplateView):
     template_name = 'core/account.html'
 
