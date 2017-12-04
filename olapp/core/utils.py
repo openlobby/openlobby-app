@@ -1,3 +1,18 @@
+from functools import wraps
+from django.conf import settings
+
+
+def get_token(func):
+    """View method decorator which gets token from cookie and passes it in
+    method kwargs.
+    """
+    @wraps(func)
+    def inner_func(self, *args, **kwargs):
+        kwargs['token'] = self.request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
+        return func(self, *args, **kwargs)
+    return inner_func
+
+
 def shorten_pages(page, pages, total_pages):
     if total_pages <= 20:
         return pages

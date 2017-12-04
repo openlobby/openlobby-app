@@ -13,22 +13,18 @@ import urllib.parse
 from . import queries
 from . import mutations
 from .forms import SearchForm, LoginForm, NewReportForm
-from .utils import get_page_info
+from .utils import get_page_info, get_token
 
 
 REPORTS_PER_PAGE = 10
 
 
-def get_token(request):
-    return request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
-
-
 class IndexView(TemplateView):
     template_name = 'core/index.html'
 
-    def get_context_data(self, **kwargs):
+    @get_token
+    def get_context_data(self, token, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        token = get_token(self.request)
         query = ''
 
         form = SearchForm(self.request.GET)
@@ -76,9 +72,9 @@ class IndexView(TemplateView):
 class ReportView(TemplateView):
     template_name = 'core/report.html'
 
-    def get_context_data(self, **kwargs):
+    @get_token
+    def get_context_data(self, token, **kwargs):
         context = super(ReportView, self).get_context_data(**kwargs)
-        token = get_token(self.request)
 
         try:
             report, viewer = queries.get_report(settings.OPENLOBBY_API_URL, kwargs['id'], token=token)
@@ -93,9 +89,9 @@ class ReportView(TemplateView):
 class UserView(TemplateView):
     template_name = 'core/user.html'
 
-    def get_context_data(self, **kwargs):
+    @get_token
+    def get_context_data(self, token, **kwargs):
         context = super(UserView, self).get_context_data(**kwargs)
-        token = get_token(self.request)
         id = kwargs['id']
 
         page = int(kwargs.get('page', 1))
@@ -163,8 +159,8 @@ class LoginRedirectView(View):
 
 class LogoutView(View):
 
-    def get(self, request):
-        token = get_token(self.request)
+    @get_token
+    def get(self, request, token):
         success = mutations.logout(settings.OPENLOBBY_API_URL, token=token)
         if success:
             response = HttpResponseRedirect(reverse('index'))
@@ -177,9 +173,9 @@ class LogoutView(View):
 class AccountView(TemplateView):
     template_name = 'core/account.html'
 
-    def get_context_data(self, **kwargs):
+    @get_token
+    def get_context_data(self, token, **kwargs):
         context = super(AccountView, self).get_context_data(**kwargs)
-        token = get_token(self.request)
         context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
         return context
 
@@ -191,13 +187,13 @@ class NewReportView(FormView):
     def get_success_url(self):
         return reverse('new-report-success')
 
-    def form_valid(self, form):
-        token = get_token(self.request)
+    @get_token
+    def form_valid(self, form, token):
         mutations.new_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
         return super(NewReportView, self).form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        token = get_token(self.request)
+    @get_token
+    def get_context_data(self, token, **kwargs):
         self.viewer = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
         context = super(NewReportView, self).get_context_data(**kwargs)
         context['viewer'] = self.viewer
@@ -213,8 +209,8 @@ class NewReportView(FormView):
 class NewReportSuccessView(TemplateView):
     template_name = 'core/new_report_success.html'
 
-    def get_context_data(self, **kwargs):
+    @get_token
+    def get_context_data(self, token, **kwargs):
         context = super(NewReportSuccessView, self).get_context_data(**kwargs)
-        token = get_token(self.request)
         context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
         return context
