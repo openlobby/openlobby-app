@@ -2,6 +2,10 @@ from functools import wraps
 from django.conf import settings
 
 
+class UnauthorizedError(Exception):
+    pass
+
+
 def get_token(func):
     """View method decorator which gets token from cookie and passes it in
     method kwargs.
@@ -10,6 +14,19 @@ def get_token(func):
     def inner_func(self, *args, **kwargs):
         kwargs['token'] = self.request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
         return func(self, *args, **kwargs)
+    return inner_func
+
+
+def viewer_required(func):
+    """View method decorator which raises UnauthorizedError if logged in viewer
+    is not in context data.
+    """
+    @wraps(func)
+    def inner_func(self, *args, **kwargs):
+        context = func(self, *args, **kwargs)
+        if context.get('viewer') is None:
+            raise UnauthorizedError()
+        return context
     return inner_func
 
 

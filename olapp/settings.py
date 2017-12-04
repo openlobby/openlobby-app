@@ -32,7 +32,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'olapp.core.middleware.ServiceUnavailableMiddleware',
+    'olapp.core.middleware.CustomErrorResponsesMiddleware',
 ]
 
 ROOT_URLCONF = 'olapp.urls'

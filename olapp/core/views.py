@@ -13,7 +13,7 @@ import urllib.parse
 from . import queries
 from . import mutations
 from .forms import SearchForm, LoginForm, NewReportForm
-from .utils import get_page_info, get_token
+from .utils import get_page_info, get_token, viewer_required
 
 
 REPORTS_PER_PAGE = 10
@@ -173,6 +173,7 @@ class LogoutView(View):
 class AccountView(TemplateView):
     template_name = 'core/account.html'
 
+    @viewer_required
     @get_token
     def get_context_data(self, token, **kwargs):
         context = super(AccountView, self).get_context_data(**kwargs)
@@ -192,6 +193,7 @@ class NewReportView(FormView):
         mutations.new_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
         return super(NewReportView, self).form_valid(form)
 
+    @viewer_required
     @get_token
     def get_context_data(self, token, **kwargs):
         self.viewer = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
@@ -201,7 +203,7 @@ class NewReportView(FormView):
 
     def get_initial(self):
         data = super(NewReportView, self).get_initial()
-        if hasattr(self, 'viewer'):
+        if hasattr(self, 'viewer') and self.viewer is not None:
             data['our_participants'] = self.viewer['name']
         return data
 
