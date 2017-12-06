@@ -11,6 +11,7 @@ import time
 import urllib.parse
 
 from . import queries
+from . import graphql
 from . import mutations
 from .forms import SearchForm, LoginForm, NewReportForm
 from .utils import get_page_info, get_token, viewer_required
@@ -41,7 +42,7 @@ class IndexView(TemplateView):
             raise SuspiciousOperation
 
         if page > 1:
-            cursor = queries.encode_cursor((page - 1) * REPORTS_PER_PAGE)
+            cursor = graphql.encode_cursor((page - 1) * REPORTS_PER_PAGE)
             slice = {'query': query, 'first': REPORTS_PER_PAGE, 'after': cursor}
         else:
             slice = {'query': query, 'first': REPORTS_PER_PAGE}
@@ -96,7 +97,7 @@ class UserView(TemplateView):
 
         page = int(kwargs.get('page', 1))
         if page > 1:
-            cursor = queries.encode_cursor((page - 1) * REPORTS_PER_PAGE)
+            cursor = graphql.encode_cursor((page - 1) * REPORTS_PER_PAGE)
             slice = {'first': REPORTS_PER_PAGE, 'after': cursor}
         else:
             slice = {'first': REPORTS_PER_PAGE}

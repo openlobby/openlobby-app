@@ -1,4 +1,4 @@
-from .queries import post_query
+from .graphql import call_mutation
 
 
 def login(api_url, openid_uid, redirect_uri):
@@ -9,7 +9,7 @@ def login(api_url, openid_uid, redirect_uri):
         }}
     }}
     """.format(openid_uid=openid_uid, redirect_uri=redirect_uri)
-    data = post_query(api_url, mutation)
+    data = call_mutation(api_url, mutation)
     return data['login']
 
 
@@ -21,7 +21,7 @@ def login_redirect(api_url, query_string):
         }}
     }}
     """.format(query_string=query_string)
-    data = post_query(api_url, mutation)
+    data = call_mutation(api_url, mutation)
     return data['loginRedirect']
 
 
@@ -33,7 +33,7 @@ def logout(api_url, *, token=None):
         }
     }
     """
-    data = post_query(api_url, mutation, token=token)
+    data = call_mutation(api_url, mutation, token=token)
     return data['logout']['success']
 
 
@@ -57,5 +57,5 @@ def new_report(api_url, report, *, token=None):
         'otherParticipants': report['other_participants'],
     }
     variables = {'input': input}
-    data = post_query(api_url, mutation, variables=variables, token=token)
+    data = call_mutation(api_url, mutation, variables=variables, token=token)
     return data['newReport']['report']

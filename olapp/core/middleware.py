@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import redirect
 
-from .queries import ServiceUnavailableError
+from .graphql import ServiceUnavailableError
 from .utils import UnauthorizedError
 
 
