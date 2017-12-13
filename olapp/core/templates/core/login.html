@@ -3,20 +3,29 @@
 {% block content %}
 
 <div class="my-5">
-  <form class="form" action="{% url 'login' %}" method="post">
+
+  {% if login_shortcuts %}
+  <div class="mb-4 row justify-content-md-center border rounded py-3 mx-0">
+    <div class="col-2 col-form-label text-right">známé služby</div>
+    <div class="col-6">
+      {% for shortcut in login_shortcuts %}
+      <a class="btn btn-primary btn-sm mr-3" rel="nofollow" href="{% url 'login-by-shortcut' shortcut_id=shortcut.id %}">{{ shortcut.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <form class="form border rounded pt-3" action="{% url 'login' %}" method="post">
     {% csrf_token %}
     <div class="form-group row justify-content-md-center">
-      <label for="{{ form.openid_uid.id_for_label }}" class="col-1 col-form-label text-right">{{ form.openid_uid.label }}</label>
+      <label for="{{ form.openid_uid.id_for_label }}" class="col-2 col-form-label text-right">{{ form.openid_uid.label }}</label>
       <div class="col-4">
         {{ form.openid_uid }}
         <small class="form-text text-muted">{{ form.openid_uid.help_text }}</small>
         <div class="invalid-feedback">{{ form.openid_uid.errors }}</div>
       </div>
-    </div>
-    <div class="form-group row justify-content-md-center">
-      <div class="col-1"></div>
-      <div class="col-4">
-        <button type="submit" class="btn btn-primary">přihlásit</button>
+      <div class="col-2">
+        <button type="submit" class="btn btn-primary btn-sm">přihlásit</button>
       </div>
     </div>
   </form>

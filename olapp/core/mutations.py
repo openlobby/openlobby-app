@@ -13,6 +13,18 @@ def login(api_url, openid_uid, redirect_uri):
     return data['login']
 
 
+def login_by_shortcut(api_url, shortcut_id, redirect_uri):
+    mutation = """
+    mutation {{
+        loginByShortcut (input: {{ shortcutId: "{shortcut_id}", redirectUri: "{redirect_uri}" }}) {{
+            authorizationUrl
+        }}
+    }}
+    """.format(shortcut_id=shortcut_id, redirect_uri=redirect_uri)
+    data = call_mutation(api_url, mutation)
+    return data['loginByShortcut']
+
+
 def login_redirect(api_url, query_string):
     mutation = """
     mutation {{

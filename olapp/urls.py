@@ -5,6 +5,7 @@ from olapp.core.views import (
     NewReportSuccessView,
     IndexView,
     LoginView,
+    LoginByShortcutView,
     LoginRedirectView,
     LogoutView,
     ReportView,
@@ -14,6 +15,7 @@ from olapp.core.views import (
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
     url(r'^login/$', LoginView.as_view(), name='login'),
+    url(r'^login/(?P<shortcut_id>[0-9A-Za-z-_]+)/$', LoginByShortcutView.as_view(), name='login-by-shortcut'),
     url(r'^login-redirect/$', LoginRedirectView.as_view(), name='login-redirect'),
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^account/$', AccountView.as_view(), name='account'),

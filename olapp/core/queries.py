@@ -2,6 +2,7 @@ from .graphql import (
     NotFoundError,
     call_query,
     encode_global_id,
+    decode_global_id,
     pythonize_report,
     pythonize_user,
 )
@@ -132,3 +133,18 @@ def get_user_with_reports(api_url, id, slice, *, token=None):
 def get_viewer(api_url, *, token=None):
     data, viewer = call_query(api_url, '', token=token)
     return viewer
+
+
+def get_login_shortcuts(api_url, *, token=None):
+    query = """
+    loginShortcuts {
+        id
+        name
+    }
+    """
+    data, viewer = call_query(api_url, query, token=token)
+    shortcuts = data['loginShortcuts']
+    for shortcut in shortcuts:
+        type, id = decode_global_id(shortcut['id'])
+        shortcut['id'] = id
+    return shortcuts, viewer

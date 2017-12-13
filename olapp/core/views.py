@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic.base import TemplateView
@@ -134,12 +135,29 @@ class LoginView(FormView):
     def get_success_url(self):
         return self.authorization_url
 
+    @get_token
+    def get_context_data(self, token, **kwargs):
+        context = super(LoginView, self).get_context_data(**kwargs)
+        login_shortcuts, viewer = queries.get_login_shortcuts(settings.OPENLOBBY_API_URL, token=token)
+        context['login_shortcuts'] = login_shortcuts
+        context['viewer'] = viewer
+        return context
+
     def form_valid(self, form):
         openid_uid = form.cleaned_data['openid_uid']
         redirect_uri = urllib.parse.urljoin(settings.APP_URL, reverse('login-redirect'))
         data = mutations.login(settings.OPENLOBBY_API_URL, openid_uid, redirect_uri)
         self.authorization_url = data['authorizationUrl']
         return super(LoginView, self).form_valid(form)
+
+
+class LoginByShortcutView(View):
+
+    def get(self, request, **kwargs):
+        shortcut_id = graphql.encode_global_id('LoginShortcut', kwargs['shortcut_id'])
+        redirect_uri = urllib.parse.urljoin(settings.APP_URL, reverse('login-redirect'))
+        data = mutations.login_by_shortcut(settings.OPENLOBBY_API_URL, shortcut_id, redirect_uri)
+        return redirect(data['authorizationUrl'])
 
 
 class LoginRedirectView(View):
@@ -167,7 +185,7 @@ class LogoutView(View):
             response = HttpResponseRedirect(reverse('index'))
             response.delete_cookie(settings.ACCESS_TOKEN_COOKIE)
         else:
-            response = HttpResponseRedirect(reverse('account'))
+            response = redirect('account')
         return response
 
 
