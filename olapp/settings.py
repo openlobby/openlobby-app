@@ -3,13 +3,16 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', '')
-if not SECRET_KEY:
-    raise RuntimeError('Missing SECRET_KEY environment variable.')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEBUG' in os.environ
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'not-secret-at-all'
+    else:
+        raise RuntimeError('Missing SECRET_KEY environment variable.')
 
 ALLOWED_HOSTS = ['*']
 
@@ -117,6 +120,9 @@ LOGGING = {
     },
 }
 
+
+###############################################################################
+# Custom settings
 
 # DSN to Open Lobby Server
 openlobby_server_dsn = os.environ.get('OPENLOBBY_SERVER_DSN', 'http://localhost:8010')

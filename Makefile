@@ -6,7 +6,7 @@ install:
 	pip install -e .
 
 run:
-	DEBUG=1 SECRET_KEY=localapp python manage.py runserver 8020
+	DEBUG=1 python manage.py runserver 8020
 
 build:
 	docker build -t openlobby/openlobby-app:latest .

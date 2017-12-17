@@ -9,7 +9,8 @@ This application comunicates with Open Lobby Server over
 ## Configuration
 
 Configuration is done by environment variables:
- - `SECRET_KEY` - long random secret string (required)
+ - `DEBUG` - Set to any value to turn on debug mode. Don't use in production!
+ - `SECRET_KEY` - long random secret string (required if not in debug mode)
  - `OPENLOBBY_SERVER_DSN` - Open Lobby Server DSN (default: `http://localhost:8010`)
  - `APP_URL` - URL where you run application (default: `http://localhost:8020`)
 
