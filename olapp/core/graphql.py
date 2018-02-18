@@ -7,7 +7,8 @@ import requests
 VIEWER = """
     viewer {
         id
-        name
+        firstName
+        lastName
         email
         openidUid
         extra
@@ -43,18 +44,24 @@ def encode_cursor(num):
 def pythonize_user(user):
     type, id = decode_global_id(user['id'])
     user['id'] = id
-    user['extra'] = json.loads(user['extra'])
+    if user['extra'] is not None:
+        user['extra'] = json.loads(user['extra'])
     return user
+
+
+def pythonize_author(author):
+    return pythonize_user(author)
 
 
 def pythonize_report(report):
     type, id = decode_global_id(report['id'])
     report['id'] = id
-    report['extra'] = json.loads(report['extra'])
+    if report['extra'] is not None:
+        report['extra'] = json.loads(report['extra'])
     report['date'] = arrow.get(report['date']).date
     report['published'] = arrow.get(report['published']).datetime
     if 'author' in report:
-        report['author'] = pythonize_user(report['author'])
+        report['author'] = pythonize_author(report['author'])
     return report
 
 

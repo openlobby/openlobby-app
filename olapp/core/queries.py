@@ -4,7 +4,7 @@ from .graphql import (
     encode_global_id,
     decode_global_id,
     pythonize_report,
-    pythonize_user,
+    pythonize_author,
 )
 
 
@@ -31,7 +31,8 @@ def search_reports(api_url, slice, *, token=None):
                 extra
                 author {{
                     id
-                    name
+                    firstName
+                    lastName
                     extra
                 }}
             }}
@@ -63,7 +64,8 @@ def get_report(api_url, id, *, token=None):
             extra
             author {{
                 id
-                name
+                firstName
+                lastName
                 extra
             }}
         }}
@@ -78,7 +80,7 @@ def get_report(api_url, id, *, token=None):
     return pythonize_report(report), viewer
 
 
-def get_user_with_reports(api_url, id, slice, *, token=None):
+def get_author_with_reports(api_url, id, slice, *, token=None):
     if 'after' in slice:
         slice_info = """(first:{first}, after:"{after}")""".format(**slice)
     else:
@@ -86,9 +88,10 @@ def get_user_with_reports(api_url, id, slice, *, token=None):
 
     query = """
     node (id:"{id}") {{
-        ... on User {{
+        ... on Author {{
             id
-            name
+            firstName
+            lastName
             extra
             reports {slice} {{
                 totalCount
@@ -109,25 +112,26 @@ def get_user_with_reports(api_url, id, slice, *, token=None):
             }}
         }}
     }}
-    """.format(id=encode_global_id('User', id), slice=slice_info)
+    """.format(id=encode_global_id('Author', id), slice=slice_info)
     data, viewer = call_query(api_url, query, token=token)
 
-    user = data['node']
-    if user is None:
+    author = data['node']
+    if author is None:
         raise NotFoundError()
 
-    user = pythonize_user(user)
+    author = pythonize_author(author)
 
-    for edge in user['reports']['edges']:
+    for edge in author['reports']['edges']:
         edge['node'] = pythonize_report(edge['node'])
         # extend report with author info
         edge['node']['author'] = {
-            'id': user['id'],
-            'name': user['name'],
-            'extra': user['extra'],
+            'id': author['id'],
+            'firstName': author['firstName'],
+            'lastName': author['lastName'],
+            'extra': author['extra'],
         }
 
-    return user, viewer
+    return author, viewer
 
 
 def get_viewer(api_url, *, token=None):

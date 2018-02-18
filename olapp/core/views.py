@@ -88,12 +88,12 @@ class ReportView(TemplateView):
         return context
 
 
-class UserView(TemplateView):
-    template_name = 'core/user.html'
+class AuthorView(TemplateView):
+    template_name = 'core/author.html'
 
     @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(UserView, self).get_context_data(**kwargs)
+        context = super(AuthorView, self).get_context_data(**kwargs)
         id = kwargs['id']
 
         page = int(kwargs.get('page', 1))
@@ -104,23 +104,23 @@ class UserView(TemplateView):
             slice = {'first': REPORTS_PER_PAGE}
 
         try:
-            user, viewer = queries.get_user_with_reports(settings.OPENLOBBY_API_URL, id, slice, token=token)
+            author, viewer = queries.get_author_with_reports(settings.OPENLOBBY_API_URL, id, slice, token=token)
         except queries.NotFoundError:
             raise Http404
 
-        context['user'] = user
+        context['author'] = author
         context['viewer'] = viewer
-        context['reports'] = [edge['node'] for edge in user['reports']['edges']]
-        context['total_reports'] = user['reports']['totalCount']
+        context['reports'] = [edge['node'] for edge in author['reports']['edges']]
+        context['total_reports'] = author['reports']['totalCount']
 
-        total_pages = math.ceil(user['reports']['totalCount'] / REPORTS_PER_PAGE)
+        total_pages = math.ceil(author['reports']['totalCount'] / REPORTS_PER_PAGE)
 
         pages = []
         for num in range(1, total_pages + 1):
             if num == 1:
-                url = reverse('user', kwargs={'id': id})
+                url = reverse('author', kwargs={'id': id})
             else:
-                url = reverse('user-page', kwargs={'id': id, 'page': num})
+                url = reverse('author-page', kwargs={'id': id, 'page': num})
             pages.append({'num': num, 'url': url, 'active': page == num})
 
         context['page_info'] = get_page_info(page, pages, total_pages)

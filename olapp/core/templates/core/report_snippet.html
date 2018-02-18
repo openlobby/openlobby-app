@@ -44,7 +44,7 @@
   <div class="col-3 pt-2 border border-left-0 rounded-right d-flex flex-column bg-light">
 
     <div>
-      <a {% if report.author.id == viewer.id %}class="text-info"{% endif %} href="{% url 'user' id=report.author.id %}">{{ report.author.name }}</a>
+      <a {% if report.author.id == viewer.id %}class="text-info"{% endif %} href="{% url 'author' id=report.author.id %}">{{ report.author.firstName }} {{ report.author.lastName }}</a>
     </div>
 
     {% if report.extra.link %}
