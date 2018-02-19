@@ -163,11 +163,10 @@ class LoginByShortcutView(View):
 class LoginRedirectView(View):
 
     def get(self, request):
-        query_string = request.META['QUERY_STRING']
-        data = mutations.login_redirect(settings.OPENLOBBY_API_URL, query_string)
+        qs = urllib.parse.parse_qs(request.META['QUERY_STRING'])
+        token = qs['token'][0]
 
         # get cookie max_age from token
-        token = data['accessToken']
         payload = jwt.decode(token, verify=False)
         max_age = payload['exp'] - time.time()
 
@@ -180,7 +179,9 @@ class LogoutView(View):
 
     @get_token
     def get(self, request, token):
-        success = mutations.logout(settings.OPENLOBBY_API_URL, token=token)
+        # TODO
+        # success = mutations.logout(settings.OPENLOBBY_API_URL, token=token)
+        success = True
         if success:
             response = HttpResponseRedirect(reverse('index'))
             response.delete_cookie(settings.ACCESS_TOKEN_COOKIE)

@@ -9,17 +9,19 @@
   </div>
   <div class="border rounded bg-light py-2 px-0">
     <div class="d-flex">
-      <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">OpenID:</small></div>
-      <div>{{ viewer.openidUid }}</div>
-    </div>
-    <div class="d-flex">
       <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">jméno:</small></div>
-      <div>{{ viewer.name }}</div>
+      <div>{{ viewer.firstName }} {{ viewer.lastName }}</div>
     </div>
     <div class="d-flex">
       <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">email:</small></div>
       <div>{{ viewer.email }}</div>
     </div>
+    {% if viewer.openidUid %}
+      <div class="d-flex">
+        <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">OpenID:</small></div>
+        <div>{{ viewer.openidUid }}</div>
+      </div>
+    {% endif %}
     {% if viewer.extra.login %}
       <div class="d-flex pt-1">
         <div class="px-3 text-right" style="min-width: 14em"><small class="text-muted">profil na Pirátském fóru:</small></div>
@@ -27,7 +29,9 @@
       </div>
     {% endif %}
   </div>
-  <div class="my-3"><a href="{% url 'user' id=viewer.id %}">moje reporty</a></div>
+  {% if viewer.isAuthor %}
+    <div class="my-3"><a href="{% url 'author' id=viewer.id %}">moje reporty</a></div>
+  {% endif %}
 </div>
 
 {% endblock %}

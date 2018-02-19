@@ -33,7 +33,7 @@
               <a class="nav-link" href="{% url 'new-report' %}">přidat schůzku</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'account' %}">{% if viewer.name %}{{ viewer.name }}{% else %}{{ viewer.openidUid }}{% endif %}</a>
+              <a class="nav-link" href="{% url 'account' %}">{{ viewer.firstName }} {{ viewer.lastName }}</a>
             </li>
           {% else %}
             <li class="nav-item">

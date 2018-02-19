@@ -25,18 +25,6 @@ def login_by_shortcut(api_url, shortcut_id, redirect_uri):
     return data['loginByShortcut']
 
 
-def login_redirect(api_url, query_string):
-    mutation = """
-    mutation {{
-        loginRedirect (input: {{ queryString: "{query_string}" }}) {{
-            accessToken
-        }}
-    }}
-    """.format(query_string=query_string)
-    data = call_mutation(api_url, mutation)
-    return data['loginRedirect']
-
-
 def logout(api_url, *, token=None):
     mutation = """
     mutation {
