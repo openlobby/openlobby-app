@@ -224,7 +224,7 @@ class NewReportView(FormView):
     def get_initial(self):
         data = super(NewReportView, self).get_initial()
         if hasattr(self, 'viewer') and self.viewer is not None:
-            data['our_participants'] = self.viewer['name']
+            data['our_participants'] = '{firstName} {lastName}'.format(**self.viewer)
         return data
 
 

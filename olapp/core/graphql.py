@@ -11,6 +11,7 @@ VIEWER = """
         lastName
         email
         openidUid
+        isAuthor
         extra
     }
 """
