@@ -21,6 +21,10 @@ class ServiceUnavailableError(Exception):
     pass
 
 
+class InvalidTokenError(Exception):
+    pass
+
+
 class GraphQLError(Exception):
     pass
 
@@ -85,6 +89,10 @@ def call_api(api_url, query, *, variables=None, token=None):
         response = requests.post(api_url, json=payload, headers=headers)
     except requests.exceptions.RequestException:
         raise ServiceUnavailableError
+
+    # unauthorized? it's wrong token
+    if response.status_code == 401:
+        raise InvalidTokenError()
 
     content = response.json()
 
