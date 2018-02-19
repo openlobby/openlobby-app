@@ -152,3 +152,32 @@ def get_login_shortcuts(api_url, *, token=None):
         type, id = decode_global_id(shortcut['id'])
         shortcut['id'] = id
     return shortcuts, viewer
+
+
+def get_authors(api_url, slice, *, token=None):
+    if 'after' in slice:
+        slice_info = """(first:{first}, after:"{after}")""".format(**slice)
+    else:
+        slice_info = """(first:{first})""".format(**slice)
+
+    query = """
+    authors {slice} {{
+        totalCount
+        edges {{
+            node {{
+                id
+                firstName
+                lastName
+                totalReports
+                extra
+            }}
+        }}
+    }}
+    """.format(slice=slice_info)
+    data, viewer = call_query(api_url, query, token=token)
+    authors = data['authors']
+
+    for edge in authors['edges']:
+        edge['node'] = pythonize_author(edge['node'])
+
+    return authors, viewer

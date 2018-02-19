@@ -18,6 +18,7 @@ from .forms import SearchForm, LoginForm, NewReportForm
 from .utils import get_page_info, get_token, viewer_required
 
 
+AUTHORS_PER_PAGE = 50
 REPORTS_PER_PAGE = 10
 
 
@@ -63,6 +64,47 @@ class IndexView(TemplateView):
         pages = []
         for num in range(1, total_pages + 1):
             url_qs = urllib.parse.urlencode({'q': query, 'p': num})
+            page_url = '{}?{}'.format(url, url_qs)
+            pages.append({'num': num, 'url': page_url, 'active': page == num})
+
+        context['page_info'] = get_page_info(page, pages, total_pages)
+
+        return context
+
+
+class AuthorsView(TemplateView):
+    template_name = 'core/authors.html'
+
+    @get_token
+    def get_context_data(self, token, **kwargs):
+        context = super(AuthorsView, self).get_context_data(**kwargs)
+
+        try:
+            page = int(self.request.GET.get('p', 1))
+        except ValueError:
+            raise SuspiciousOperation
+
+        if page > 1:
+            cursor = graphql.encode_cursor((page - 1) * AUTHORS_PER_PAGE)
+            slice = {'first': AUTHORS_PER_PAGE, 'after': cursor}
+        else:
+            slice = {'first': AUTHORS_PER_PAGE}
+
+        authors, viewer = queries.get_authors(settings.OPENLOBBY_API_URL, slice, token=token)
+
+        context['viewer'] = viewer
+        context['authors'] = [edge['node'] for edge in authors['edges']]
+        context['total_reports'] = authors['totalCount']
+
+        total_pages = math.ceil(authors['totalCount'] / AUTHORS_PER_PAGE)
+
+        if page > total_pages and page != 1:
+            raise Http404
+
+        url = reverse('authors')
+        pages = []
+        for num in range(1, total_pages + 1):
+            url_qs = urllib.parse.urlencode({'p': num})
             page_url = '{}?{}'.format(url, url_qs)
             pages.append({'num': num, 'url': page_url, 'active': page == num})
 

@@ -2,7 +2,8 @@
 
 {% block content %}
 
-<div class="my-5">
+<div class="mb-4">
+  <h5 class="mb-3">Nová schůzka</h5>
   <form class="form" action="{% url 'new-report' %}" method="post">
     {% csrf_token %}
     {% include "core/form_field_snippet.html" with field=form.date %}

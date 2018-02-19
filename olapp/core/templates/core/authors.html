@@ -1,0 +1,40 @@
+{% extends "core/skeleton.html" %}
+
+{% block content %}
+
+<div class="mt-0 mb-3 d-flex justify-content-end">
+  {% include "core/pagination_snippet.html" %}
+</div>
+
+<div class="row justify-content-md-center">
+  <div class="col-md-5">
+  {% if authors %}
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          <th scope="col">jméno</th>
+          <th scope="col">příjmení</th>
+          <th scope="col">přidal schůzek</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for author in authors %}
+      <tr>
+        <td><a href="{% url 'author' id=author.id %}">{{ author.firstName }}</a></td>
+        <td><a href="{% url 'author' id=author.id %}">{{ author.lastName }}</a></td>
+        <td><a href="{% url 'author' id=author.id %}">{{ author.totalReports }}</a></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-center mb-4">Nenalezen žádný autor.</p>
+  {% endif %}
+  </div>
+</div>
+
+<div class="my-4 d-flex justify-content-end">
+  {% include "core/pagination_snippet.html" %}
+</div>
+
+{% endblock %}
