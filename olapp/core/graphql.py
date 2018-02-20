@@ -2,6 +2,7 @@ import arrow
 import base64
 import json
 import requests
+from django.conf import settings
 
 
 VIEWER = """
@@ -63,8 +64,8 @@ def pythonize_report(report):
     report['id'] = id
     if report['extra'] is not None:
         report['extra'] = json.loads(report['extra'])
-    report['date'] = arrow.get(report['date']).date
-    report['published'] = arrow.get(report['published']).datetime
+    report['date'] = arrow.get(report['date']).to(settings.TIME_ZONE).date()
+    report['published'] = arrow.get(report['published']).to(settings.TIME_ZONE).datetime
     if 'author' in report:
         report['author'] = pythonize_author(report['author'])
     return report
