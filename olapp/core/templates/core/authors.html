@@ -21,7 +21,10 @@
       {% for author in authors %}
       <tr>
         <td><a href="{% url 'author' id=author.id %}">{{ author.firstName }}</a></td>
-        <td><a href="{% url 'author' id=author.id %}">{{ author.lastName }}</a></td>
+        <td>
+          <a href="{% url 'author' id=author.id %}">{{ author.lastName }}</a>
+          {% include "core/name_collision_snippet.html" %}
+        </td>
         <td><a href="{% url 'author' id=author.id %}">{{ author.totalReports }}</a></td>
       </tr>
       {% endfor %}

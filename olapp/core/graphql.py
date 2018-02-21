@@ -10,6 +10,7 @@ VIEWER = """
         id
         firstName
         lastName
+        hasCollidingName
         email
         openidUid
         isAuthor

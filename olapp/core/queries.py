@@ -33,6 +33,7 @@ def search_reports(api_url, slice, *, token=None):
                     id
                     firstName
                     lastName
+                    hasCollidingName
                     extra
                 }}
             }}
@@ -66,6 +67,7 @@ def get_report(api_url, id, *, token=None):
                 id
                 firstName
                 lastName
+                hasCollidingName
                 extra
             }}
         }}
@@ -92,6 +94,7 @@ def get_author_with_reports(api_url, id, slice, *, token=None):
             id
             firstName
             lastName
+            hasCollidingName
             extra
             reports {slice} {{
                 totalCount
@@ -128,6 +131,7 @@ def get_author_with_reports(api_url, id, slice, *, token=None):
             'id': author['id'],
             'firstName': author['firstName'],
             'lastName': author['lastName'],
+            'hasCollidingName': author['hasCollidingName'],
             'extra': author['extra'],
         }
 
@@ -168,6 +172,7 @@ def get_authors(api_url, slice, *, token=None):
                 id
                 firstName
                 lastName
+                hasCollidingName
                 totalReports
                 extra
             }}
