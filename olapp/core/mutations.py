@@ -37,10 +37,10 @@ def logout(api_url, *, token=None):
     return data['logout']['success']
 
 
-def new_report(api_url, report, *, token=None):
+def create_report(api_url, report, *, token=None):
     mutation = """
-    mutation newReport ($input: NewReportInput!) {
-        newReport (input: $input) {
+    mutation createReport ($input: CreateReportInput!) {
+        createReport (input: $input) {
             report {
                 id
             }
@@ -58,4 +58,4 @@ def new_report(api_url, report, *, token=None):
     }
     variables = {'input': input}
     data = call_mutation(api_url, mutation, variables=variables, token=token)
-    return data['newReport']['report']
+    return data['createReport']['report']

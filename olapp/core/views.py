@@ -252,7 +252,7 @@ class NewReportView(FormView):
 
     @get_token
     def form_valid(self, form, token):
-        mutations.new_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
+        mutations.create_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
         return super(NewReportView, self).form_valid(form)
 
     @viewer_required
