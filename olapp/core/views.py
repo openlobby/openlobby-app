@@ -258,8 +258,10 @@ class NewReportView(FormView):
     @viewer_required
     @get_token
     def get_context_data(self, token, **kwargs):
-        self.viewer = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        drafts, viewer = queries.get_report_drafts(settings.OPENLOBBY_API_URL, token=token)
+        self.viewer = viewer
         context = super(NewReportView, self).get_context_data(**kwargs)
+        context['drafts'] = drafts
         context['viewer'] = self.viewer
         return context
 

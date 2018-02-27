@@ -63,10 +63,12 @@ def pythonize_author(author):
 def pythonize_report(report):
     type, id = decode_global_id(report['id'])
     report['id'] = id
-    if report['extra'] is not None:
+    if 'extra' in report and report['extra'] is not None:
         report['extra'] = json.loads(report['extra'])
-    report['date'] = arrow.get(report['date']).to(settings.TIME_ZONE).date()
-    report['published'] = arrow.get(report['published']).to(settings.TIME_ZONE).datetime
+    if 'date' in report:
+        report['date'] = arrow.get(report['date']).to(settings.TIME_ZONE).date()
+    if 'published' in report:
+        report['published'] = arrow.get(report['published']).to(settings.TIME_ZONE).datetime
     if 'author' in report:
         report['author'] = pythonize_author(report['author'])
     return report

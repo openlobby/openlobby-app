@@ -2,6 +2,17 @@
 
 {% block content %}
 
+{% if drafts %}
+<div class="mb-4">
+  <h5 class="mb-3">Koncepty schůzek</h5>
+  <ul>
+  {% for draft in drafts %}
+  <li><a href="#">{{ draft.date|date:"DATE_FORMAT" }} - {{ draft.title }} - {{ draft.body|truncatewords:5 }}</a></li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 <div class="mb-4">
   <h5 class="mb-3">Nová schůzka</h5>
   <form class="form" action="{% url 'new-report' %}" method="post">
@@ -16,7 +27,8 @@
     <div class="form-group row">
       <div class="col-2"></div>
       <div class="col-10">
-        <button type="submit" class="btn btn-primary">uložit</button>
+        <button type="submit" name="publish" class="btn btn-primary">publikovat</button>
+        <button type="submit" name="save_draft" class="btn btn-secondary ml-3">uložit koncept</button>
       </div>
     </div>
   </form>

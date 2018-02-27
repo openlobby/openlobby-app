@@ -55,6 +55,7 @@ def create_report(api_url, report, *, token=None):
         'date': report['date'].isoformat(),
         'ourParticipants': report['our_participants'],
         'otherParticipants': report['other_participants'],
+        'isDraft': report['is_draft'],
     }
     variables = {'input': input}
     data = call_mutation(api_url, mutation, variables=variables, token=token)

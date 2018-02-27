@@ -186,3 +186,19 @@ def get_authors(api_url, slice, *, token=None):
         edge['node'] = pythonize_author(edge['node'])
 
     return authors, viewer
+
+
+def get_report_drafts(api_url, *, token=None):
+    query = """
+    reportDrafts {
+        id
+        date
+        title
+        body
+    }
+    """
+    data, viewer = call_query(api_url, query, token=token)
+    drafts = data['reportDrafts']
+    for draft in drafts:
+        draft = pythonize_report(draft)
+    return drafts, viewer
