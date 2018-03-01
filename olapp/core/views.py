@@ -305,8 +305,9 @@ class EditReportView(FormView):
         id = self.kwargs['id']
         report, viewer = queries.get_report(settings.OPENLOBBY_API_URL, id, token=token)
 
-        if report['author']['id'] != viewer['id']:
-            raise Http404
+        if not report['isDraft']:
+            if report['author']['id'] != viewer['id']:
+                raise Http404
 
         self.report = report
         self.viewer = viewer

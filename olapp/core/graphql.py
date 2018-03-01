@@ -69,7 +69,7 @@ def pythonize_report(report):
         report['date'] = arrow.get(report['date']).to(settings.TIME_ZONE).date()
     if 'published' in report:
         report['published'] = arrow.get(report['published']).to(settings.TIME_ZONE).datetime
-    if 'author' in report:
+    if 'author' in report and report['author'] is not None:
         report['author'] = pythonize_author(report['author'])
     return report
 
