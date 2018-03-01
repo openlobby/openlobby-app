@@ -48,20 +48,19 @@
       {% include "core/name_collision_snippet.html" with author=report.author %}
     </div>
 
-    {% if report.extra.link %}
     <div class="mt-auto py-1 small text-muted">
-      <div class="border rounded p-1">
-        report zkopírován z <a href="{{ report.extra.link }}">Pirátského fóra</a><br>
+      {% if report.author.id == viewer.id %}
+        <div class="mt-1"><a href="{% url 'edit-report' id=report.id %}">editovat</a></div>
+      {% endif %}
+
+      <div class="mt-1">
+          publikováno: {{ report.published|date:"DATETIME_FORMAT" }}
+          <a class="ml-2" href="{% url 'report' id=report.id %}">permalink</a>
       </div>
-    </div>
-    <div class="py-1">
-    {% else %}
-    <div class="mt-auto py-1">
-    {% endif %}
-      <span class="small text-muted">
-        publikováno: {{ report.published|date:"DATETIME_FORMAT" }}
-        <a class="ml-2" href="{% url 'report' id=report.id %}">permalink</a>
-      </span>
+
+      {% if report.extra.link %}
+      <div class="mt-1">report zkopírován z <a href="{{ report.extra.link }}">Pirátského fóra</a></div>
+      {% endif %}
     </div>
 
   </div>

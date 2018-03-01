@@ -2,6 +2,10 @@
 
 {% block content %}
 
+{% if saved_message %}
+  <div class="alert alert-success text-center mb-4" role="alert">Schůzka byla publikována.</div>
+{% endif %}
+
 {% include "core/report_snippet.html" %}
 
 {% endblock %}

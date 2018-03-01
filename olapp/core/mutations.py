@@ -1,4 +1,4 @@
-from .graphql import call_mutation
+from .graphql import call_mutation, encode_global_id, decode_global_id
 
 
 def login(api_url, openid_uid, redirect_uri):
@@ -59,4 +59,32 @@ def create_report(api_url, report, *, token=None):
     }
     variables = {'input': input}
     data = call_mutation(api_url, mutation, variables=variables, token=token)
-    return data['createReport']['report']
+    type, id = decode_global_id(data['createReport']['report']['id'])
+    return id
+
+
+def update_report(api_url, report, *, token=None):
+    mutation = """
+    mutation updateReport ($input: UpdateReportInput!) {
+        updateReport (input: $input) {
+            report {
+                id
+            }
+        }
+    }
+    """
+    input = {
+        'id': encode_global_id('Report', report['id']),
+        'title': report['title'],
+        'body': report['body'],
+        'receivedBenefit': report['received_benefit'],
+        'providedBenefit': report['provided_benefit'],
+        'date': report['date'].isoformat(),
+        'ourParticipants': report['our_participants'],
+        'otherParticipants': report['other_participants'],
+        'isDraft': report['is_draft'],
+    }
+    variables = {'input': input}
+    data = call_mutation(api_url, mutation, variables=variables, token=token)
+    type, id = decode_global_id(data['updateReport']['report']['id'])
+    return id

@@ -62,6 +62,7 @@ def get_report(api_url, id, *, token=None):
             providedBenefit
             ourParticipants
             otherParticipants
+            isDraft
             extra
             author {{
                 id

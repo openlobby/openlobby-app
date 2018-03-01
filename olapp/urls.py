@@ -1,16 +1,16 @@
 from django.conf.urls import url
 from olapp.core.views import (
     AccountView,
+    AuthorView,
+    AuthorsView,
+    EditReportView,
     NewReportView,
-    NewReportSuccessView,
     IndexView,
     LoginView,
     LoginByShortcutView,
     LoginRedirectView,
     LogoutView,
     ReportView,
-    AuthorView,
-    AuthorsView,
 )
 
 urlpatterns = [
@@ -21,8 +21,8 @@ urlpatterns = [
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^account/$', AccountView.as_view(), name='account'),
     url(r'^new-report/$', NewReportView.as_view(), name='new-report'),
-    url(r'^new-report/success/$', NewReportSuccessView.as_view(), name='new-report-success'),
     url(r'^report/(?P<id>[0-9A-Za-z-_]+)/$', ReportView.as_view(), name='report'),
+    url(r'^report/(?P<id>[0-9A-Za-z-_]+)/edit/$', EditReportView.as_view(), name='edit-report'),
     url(r'^authors/$', AuthorsView.as_view(), name='authors'),
     url(r'^author/(?P<id>[0-9A-Za-z-_]+)/$', AuthorView.as_view(), name='author'),
     url(r'^author/(?P<id>[0-9A-Za-z-_]+)/(?P<page>[0-9]+)/$', AuthorView.as_view(), name='author-page'),

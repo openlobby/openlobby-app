@@ -14,7 +14,7 @@ import urllib.parse
 from . import queries
 from . import graphql
 from . import mutations
-from .forms import SearchForm, LoginForm, NewReportForm
+from .forms import SearchForm, LoginForm, ReportForm
 from .utils import get_page_info, get_token, viewer_required
 
 
@@ -27,7 +27,7 @@ class IndexView(TemplateView):
 
     @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         query = ''
 
         form = SearchForm(self.request.GET)
@@ -77,7 +77,7 @@ class AuthorsView(TemplateView):
 
     @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(AuthorsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         try:
             page = int(self.request.GET.get('p', 1))
@@ -118,7 +118,11 @@ class ReportView(TemplateView):
 
     @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(ReportView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
+        saved = self.request.GET.get('saved')
+        if saved is not None:
+            context['saved_message'] = True
 
         try:
             report, viewer = queries.get_report(settings.OPENLOBBY_API_URL, kwargs['id'], token=token)
@@ -135,7 +139,7 @@ class AuthorView(TemplateView):
 
     @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(AuthorView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         id = kwargs['id']
 
         page = int(kwargs.get('page', 1))
@@ -179,7 +183,7 @@ class LoginView(FormView):
 
     @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(LoginView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         login_shortcuts, viewer = queries.get_login_shortcuts(settings.OPENLOBBY_API_URL, token=token)
         context['login_shortcuts'] = login_shortcuts
         context['viewer'] = viewer
@@ -190,7 +194,7 @@ class LoginView(FormView):
         redirect_uri = urllib.parse.urljoin(settings.APP_URL, reverse('login-redirect'))
         data = mutations.login(settings.OPENLOBBY_API_URL, openid_uid, redirect_uri)
         self.authorization_url = data['authorizationUrl']
-        return super(LoginView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class LoginByShortcutView(View):
@@ -205,8 +209,7 @@ class LoginByShortcutView(View):
 class LoginRedirectView(View):
 
     def get(self, request):
-        qs = urllib.parse.parse_qs(request.META['QUERY_STRING'])
-        token = qs['token'][0]
+        token = request.GET.get('token')
 
         # get cookie max_age from token
         payload = jwt.decode(token, verify=False)
@@ -238,45 +241,96 @@ class AccountView(TemplateView):
     @viewer_required
     @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(AccountView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
         return context
 
 
 class NewReportView(FormView):
     template_name = 'core/new_report.html'
-    form_class = NewReportForm
+    form_class = ReportForm
 
     def get_success_url(self):
-        return reverse('new-report-success')
+        if self.is_draft:
+            url = reverse('edit-report', kwargs={'id': self.id})
+        else:
+            url = reverse('report', kwargs={'id': self.id})
+        return '{}?saved=true'.format(url)
 
     @get_token
     def form_valid(self, form, token):
-        mutations.create_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
-        return super(NewReportView, self).form_valid(form)
+        id = mutations.create_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
+        self.id = id
+        self.is_draft = form.cleaned_data['is_draft']
+        return super().form_valid(form)
 
     @viewer_required
     @get_token
     def get_context_data(self, token, **kwargs):
         drafts, viewer = queries.get_report_drafts(settings.OPENLOBBY_API_URL, token=token)
         self.viewer = viewer
-        context = super(NewReportView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['drafts'] = drafts
         context['viewer'] = self.viewer
         return context
 
     def get_initial(self):
-        data = super(NewReportView, self).get_initial()
+        data = super().get_initial()
         if hasattr(self, 'viewer') and self.viewer is not None:
             data['our_participants'] = '{firstName} {lastName}'.format(**self.viewer)
         return data
 
 
-class NewReportSuccessView(TemplateView):
-    template_name = 'core/new_report_success.html'
+class EditReportView(FormView):
+    template_name = 'core/edit_report.html'
+    form_class = ReportForm
+
+    def get_success_url(self):
+        if self.is_draft:
+            url = reverse('edit-report', kwargs={'id': self.id})
+        else:
+            url = reverse('report', kwargs={'id': self.id})
+        return '{}?saved=true'.format(url)
 
     @get_token
+    def form_valid(self, form, token):
+        id = mutations.update_report(settings.OPENLOBBY_API_URL, form.cleaned_data, token=token)
+        self.id = id
+        self.is_draft = form.cleaned_data['is_draft']
+        return super().form_valid(form)
+
+    @viewer_required
+    @get_token
     def get_context_data(self, token, **kwargs):
-        context = super(NewReportSuccessView, self).get_context_data(**kwargs)
-        context['viewer'] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        id = self.kwargs['id']
+        report, viewer = queries.get_report(settings.OPENLOBBY_API_URL, id, token=token)
+
+        if report['author']['id'] != viewer['id']:
+            raise Http404
+
+        self.report = report
+        self.viewer = viewer
+
+        context = super().get_context_data(**kwargs)
+
+        saved = self.request.GET.get('saved')
+        if saved is not None:
+            context['saved_message'] = True
+
+        context['report'] = self.report
+        context['viewer'] = self.viewer
         return context
+
+    def get_initial(self):
+        data = super().get_initial()
+        if hasattr(self, 'report') and self.report is not None:
+            data['id'] = self.report['id']
+            data['date'] = self.report['date']
+            data['published'] = self.report['published']
+            data['title'] = self.report['title']
+            data['body'] = self.report['body']
+            data['received_benefit'] = self.report['receivedBenefit']
+            data['provided_benefit'] = self.report['providedBenefit']
+            data['our_participants'] = self.report['ourParticipants']
+            data['other_participants'] = self.report['otherParticipants']
+        return data

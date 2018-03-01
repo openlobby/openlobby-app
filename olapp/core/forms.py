@@ -39,7 +39,12 @@ class LoginForm(ErrorClassMixin, forms.Form):
     )
 
 
-class NewReportForm(ErrorClassMixin, forms.Form):
+class ReportForm(ErrorClassMixin, forms.Form):
+    id = forms.CharField(
+        label='id',
+        required=False,
+        widget=forms.HiddenInput(),
+    )
     title = forms.CharField(
         label='titulek',
         widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
@@ -76,7 +81,7 @@ class NewReportForm(ErrorClassMixin, forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        cleaned_data['is_draft'] = 'save_draft' in self.data
+        cleaned_data['is_draft'] = 'publish' not in self.data
         return cleaned_data
 
     def clean_title(self):
