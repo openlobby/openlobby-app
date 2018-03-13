@@ -4,7 +4,7 @@
 
 {% if drafts %}
 <div class="mb-4">
-  <h5 class="mb-3">Vaše koncepty schůzek</h5>
+  <h5 class="mb-3">Koncepty kontaktů</h5>
   <ul>
   {% for draft in drafts %}
   <li><a href="{% url 'edit-report' id=draft.id %}">{{ draft.date|date:"DATE_FORMAT" }} - {{ draft.title }} - {{ draft.body|truncatewords:5 }}</a></li>
@@ -14,7 +14,7 @@
 {% endif %}
 
 <div class="mb-4">
-  <h5 class="mb-3">Nová schůzka</h5>
+  <h5 class="mb-3">Nový kontakt</h5>
   <form class="form" action="{% url 'new-report' %}" method="post">
     {% csrf_token %}
     {% include "core/form_field_snippet.html" with field=form.date %}

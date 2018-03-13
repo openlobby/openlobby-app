@@ -64,7 +64,7 @@ class ReportForm(ErrorClassMixin, forms.Form):
         widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
     )
     date = forms.DateField(
-        label='datum schůzky',
+        label='datum kontaktu',
         initial=date.today,
         widget=forms.DateInput(attrs={'class': INPUT_CLASS + ' col-md-2'}),
     )

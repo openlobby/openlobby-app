@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Registr lobbistických schůzek (beta)</title>
+    <title>Registr lobbistických kontaktů</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -29,7 +29,7 @@
 
     <nav class="navbar navbar-dark navbar-expand-lg bg-dark mb-0"> {# mb-4 až tu nebude alert #}
       <div class="container px-3">
-        <a class="navbar-brand" href="/">Registr lobbistických schůzek <sup class="text-muted">beta</sup></a>
+        <a class="navbar-brand" href="/">Registr lobbistických kontaktů</a>
 
         <form class="form-inline" action="{% url 'index' %}" method="get">
           <input class="form-control form-control-sm" type="search" name="q" id="id_q" value="{{ form.q.value|default_if_none:"" }}">
@@ -56,14 +56,14 @@
       <div class="container">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link py-1" href="{% url 'index' %}">schůzky</a>
+            <a class="nav-link py-1" href="{% url 'index' %}">kontakty</a>
           </li>
           <li class="nav-item">
             <a class="nav-link py-1" href="{% url 'authors' %}">autoři</a>
           </li>
           {% if viewer %}
             <li class="nav-item">
-              <a class="nav-link py-1" href="{% url 'new-report' %}">přidat schůzku</a>
+              <a class="nav-link py-1" href="{% url 'new-report' %}">přidat kontakt</a>
             </li>
           {% endif %}
         </ul>

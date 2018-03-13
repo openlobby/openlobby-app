@@ -3,14 +3,14 @@
 {% block content %}
 
 {% if saved_message %}
-  <div class="alert alert-success text-center mb-4" role="alert">Koncept schůzky byl uložen.</div>
+  <div class="alert alert-success text-center mb-4" role="alert">Koncept kontaktu byl uložen.</div>
 {% endif %}
 
 <div class="mb-4">
   {% if report.isDraft %}
-    <h5 class="mb-3">Editace konceptu schůzky</h5>
+    <h5 class="mb-3">Editace konceptu kontaktu</h5>
   {% else %}
-  <h5 class="mb-3">Editace <span class="text-danger">publikované</span> schůzky</h5>
+  <h5 class="mb-3">Editace <span class="text-danger">publikovaného</span> kontaktu</h5>
   {% endif %}
   <form class="form" action="{% url 'edit-report' id=report.id %}" method="post">
     {% csrf_token %}
