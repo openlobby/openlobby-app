@@ -48,3 +48,7 @@ variable `OPENLOBBY_SERVER_DSN`. E.g.
 ### Testing
 
 Run: `pytest`
+
+### Code formatting
+
+We are using [Black](https://github.com/ambv/black) for code formatting.
