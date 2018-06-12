@@ -9,10 +9,14 @@ from .graphql import (
 
 
 def search_reports(api_url, slice, *, token=None):
-    if 'after' in slice:
-        slice_info = """(query:"{query}", highlight:true, first:{first}, after:"{after}")""".format(**slice)
+    if "after" in slice:
+        slice_info = """(query:"{query}", highlight:true, first:{first}, after:"{after}")""".format(
+            **slice
+        )
     else:
-        slice_info = """(query:"{query}", highlight:true, first:{first})""".format(**slice)
+        slice_info = """(query:"{query}", highlight:true, first:{first})""".format(
+            **slice
+        )
 
     query = """
     searchReports {slice} {{
@@ -39,12 +43,14 @@ def search_reports(api_url, slice, *, token=None):
             }}
         }}
     }}
-    """.format(slice=slice_info)
+    """.format(
+        slice=slice_info
+    )
     data, viewer = call_query(api_url, query, token=token)
-    search = data['searchReports']
+    search = data["searchReports"]
 
-    for edge in search['edges']:
-        edge['node'] = pythonize_report(edge['node'])
+    for edge in search["edges"]:
+        edge["node"] = pythonize_report(edge["node"])
 
     return search, viewer
 
@@ -73,10 +79,12 @@ def get_report(api_url, id, *, token=None):
             }}
         }}
     }}
-    """.format(id=encode_global_id('Report', id))
+    """.format(
+        id=encode_global_id("Report", id)
+    )
     data, viewer = call_query(api_url, query, token=token)
 
-    report = data['node']
+    report = data["node"]
     if report is None:
         raise NotFoundError()
 
@@ -84,7 +92,7 @@ def get_report(api_url, id, *, token=None):
 
 
 def get_author_with_reports(api_url, id, slice, *, token=None):
-    if 'after' in slice:
+    if "after" in slice:
         slice_info = """(first:{first}, after:"{after}")""".format(**slice)
     else:
         slice_info = """(first:{first})""".format(**slice)
@@ -116,31 +124,33 @@ def get_author_with_reports(api_url, id, slice, *, token=None):
             }}
         }}
     }}
-    """.format(id=encode_global_id('Author', id), slice=slice_info)
+    """.format(
+        id=encode_global_id("Author", id), slice=slice_info
+    )
     data, viewer = call_query(api_url, query, token=token)
 
-    author = data['node']
+    author = data["node"]
     if author is None:
         raise NotFoundError()
 
     author = pythonize_author(author)
 
-    for edge in author['reports']['edges']:
-        edge['node'] = pythonize_report(edge['node'])
+    for edge in author["reports"]["edges"]:
+        edge["node"] = pythonize_report(edge["node"])
         # extend report with author info
-        edge['node']['author'] = {
-            'id': author['id'],
-            'firstName': author['firstName'],
-            'lastName': author['lastName'],
-            'hasCollidingName': author['hasCollidingName'],
-            'extra': author['extra'],
+        edge["node"]["author"] = {
+            "id": author["id"],
+            "firstName": author["firstName"],
+            "lastName": author["lastName"],
+            "hasCollidingName": author["hasCollidingName"],
+            "extra": author["extra"],
         }
 
     return author, viewer
 
 
 def get_viewer(api_url, *, token=None):
-    data, viewer = call_query(api_url, '', token=token)
+    data, viewer = call_query(api_url, "", token=token)
     return viewer
 
 
@@ -152,15 +162,15 @@ def get_login_shortcuts(api_url, *, token=None):
     }
     """
     data, viewer = call_query(api_url, query, token=token)
-    shortcuts = data['loginShortcuts']
+    shortcuts = data["loginShortcuts"]
     for shortcut in shortcuts:
-        type, id = decode_global_id(shortcut['id'])
-        shortcut['id'] = id
+        type, id = decode_global_id(shortcut["id"])
+        shortcut["id"] = id
     return shortcuts, viewer
 
 
 def get_authors(api_url, slice, *, token=None):
-    if 'after' in slice:
+    if "after" in slice:
         slice_info = """(first:{first}, after:"{after}")""".format(**slice)
     else:
         slice_info = """(first:{first})""".format(**slice)
@@ -179,12 +189,14 @@ def get_authors(api_url, slice, *, token=None):
             }}
         }}
     }}
-    """.format(slice=slice_info)
+    """.format(
+        slice=slice_info
+    )
     data, viewer = call_query(api_url, query, token=token)
-    authors = data['authors']
+    authors = data["authors"]
 
-    for edge in authors['edges']:
-        edge['node'] = pythonize_author(edge['node'])
+    for edge in authors["edges"]:
+        edge["node"] = pythonize_author(edge["node"])
 
     return authors, viewer
 
@@ -199,7 +211,7 @@ def get_report_drafts(api_url, *, token=None):
     }
     """
     data, viewer = call_query(api_url, query, token=token)
-    drafts = data['reportDrafts']
+    drafts = data["reportDrafts"]
     for draft in drafts:
         draft = pythonize_report(draft)
     return drafts, viewer

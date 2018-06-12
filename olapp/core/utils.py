@@ -10,10 +10,12 @@ def get_token(func):
     """View method decorator which gets token from cookie and passes it in
     method kwargs.
     """
+
     @wraps(func)
     def inner_func(self, *args, **kwargs):
-        kwargs['token'] = self.request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
+        kwargs["token"] = self.request.COOKIES.get(settings.ACCESS_TOKEN_COOKIE)
         return func(self, *args, **kwargs)
+
     return inner_func
 
 
@@ -21,12 +23,14 @@ def viewer_required(func):
     """View method decorator which raises UnauthorizedError if logged in viewer
     is not in context data.
     """
+
     @wraps(func)
     def inner_func(self, *args, **kwargs):
         context = func(self, *args, **kwargs)
-        if context.get('viewer') is None:
+        if context.get("viewer") is None:
             raise UnauthorizedError()
         return context
+
     return inner_func
 
 
@@ -45,7 +49,7 @@ def shorten_pages(page, pages, total_pages):
     for i in sorted(items):
         if i - last > 1:
             out.append(None)
-        out.append(pages[i-1])
+        out.append(pages[i - 1])
         last = i
 
     return out
@@ -55,18 +59,18 @@ def get_page_info(page, pages, total_pages):
     if page == 1:
         previous_url = None
     else:
-        previous_url = pages[page - 2]['url']
+        previous_url = pages[page - 2]["url"]
 
     if page == total_pages or total_pages == 0:
         next_url = None
     else:
-        next_url = pages[page]['url']
+        next_url = pages[page]["url"]
 
     return {
-        'show': len(pages) > 1,
-        'page': page,
-        'pages': shorten_pages(page, pages, total_pages),
-        'total_pages': total_pages,
-        'previous_url': previous_url,
-        'next_url': next_url,
+        "show": len(pages) > 1,
+        "page": page,
+        "pages": shorten_pages(page, pages, total_pages),
+        "total_pages": total_pages,
+        "previous_url": previous_url,
+        "next_url": next_url,
     }

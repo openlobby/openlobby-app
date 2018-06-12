@@ -8,9 +8,11 @@ def login(api_url, openid_uid, redirect_uri):
             authorizationUrl
         }}
     }}
-    """.format(openid_uid=openid_uid, redirect_uri=redirect_uri)
+    """.format(
+        openid_uid=openid_uid, redirect_uri=redirect_uri
+    )
     data = call_mutation(api_url, mutation)
-    return data['login']
+    return data["login"]
 
 
 def login_by_shortcut(api_url, shortcut_id, redirect_uri):
@@ -20,9 +22,11 @@ def login_by_shortcut(api_url, shortcut_id, redirect_uri):
             authorizationUrl
         }}
     }}
-    """.format(shortcut_id=shortcut_id, redirect_uri=redirect_uri)
+    """.format(
+        shortcut_id=shortcut_id, redirect_uri=redirect_uri
+    )
     data = call_mutation(api_url, mutation)
-    return data['loginByShortcut']
+    return data["loginByShortcut"]
 
 
 def logout(api_url, *, token=None):
@@ -34,7 +38,7 @@ def logout(api_url, *, token=None):
     }
     """
     data = call_mutation(api_url, mutation, token=token)
-    return data['logout']['success']
+    return data["logout"]["success"]
 
 
 def create_report(api_url, report, *, token=None):
@@ -48,18 +52,18 @@ def create_report(api_url, report, *, token=None):
     }
     """
     input = {
-        'title': report['title'],
-        'body': report['body'],
-        'receivedBenefit': report['received_benefit'],
-        'providedBenefit': report['provided_benefit'],
-        'date': report['date'].isoformat(),
-        'ourParticipants': report['our_participants'],
-        'otherParticipants': report['other_participants'],
-        'isDraft': report['is_draft'],
+        "title": report["title"],
+        "body": report["body"],
+        "receivedBenefit": report["received_benefit"],
+        "providedBenefit": report["provided_benefit"],
+        "date": report["date"].isoformat(),
+        "ourParticipants": report["our_participants"],
+        "otherParticipants": report["other_participants"],
+        "isDraft": report["is_draft"],
     }
-    variables = {'input': input}
+    variables = {"input": input}
     data = call_mutation(api_url, mutation, variables=variables, token=token)
-    type, id = decode_global_id(data['createReport']['report']['id'])
+    type, id = decode_global_id(data["createReport"]["report"]["id"])
     return id
 
 
@@ -74,17 +78,17 @@ def update_report(api_url, report, *, token=None):
     }
     """
     input = {
-        'id': encode_global_id('Report', report['id']),
-        'title': report['title'],
-        'body': report['body'],
-        'receivedBenefit': report['received_benefit'],
-        'providedBenefit': report['provided_benefit'],
-        'date': report['date'].isoformat(),
-        'ourParticipants': report['our_participants'],
-        'otherParticipants': report['other_participants'],
-        'isDraft': report['is_draft'],
+        "id": encode_global_id("Report", report["id"]),
+        "title": report["title"],
+        "body": report["body"],
+        "receivedBenefit": report["received_benefit"],
+        "providedBenefit": report["provided_benefit"],
+        "date": report["date"].isoformat(),
+        "ourParticipants": report["our_participants"],
+        "otherParticipants": report["other_participants"],
+        "isDraft": report["is_draft"],
     }
-    variables = {'input': input}
+    variables = {"input": input}
     data = call_mutation(api_url, mutation, variables=variables, token=token)
-    type, id = decode_global_id(data['updateReport']['report']['id'])
+    type, id = decode_global_id(data["updateReport"]["report"]["id"])
     return id
