@@ -41,6 +41,10 @@ def logout(api_url, *, token=None):
     return data["logout"]["success"]
 
 
+def _date_to_iso_noon(date):
+    return "{}T12:00:00Z".format(date.isoformat())
+
+
 def create_report(api_url, report, *, token=None):
     mutation = """
     mutation createReport ($input: CreateReportInput!) {
@@ -56,7 +60,7 @@ def create_report(api_url, report, *, token=None):
         "body": report["body"],
         "receivedBenefit": report["received_benefit"],
         "providedBenefit": report["provided_benefit"],
-        "date": report["date"].isoformat(),
+        "date": _date_to_iso_noon(report["date"]),
         "ourParticipants": report["our_participants"],
         "otherParticipants": report["other_participants"],
         "isDraft": report["is_draft"],
@@ -83,7 +87,7 @@ def update_report(api_url, report, *, token=None):
         "body": report["body"],
         "receivedBenefit": report["received_benefit"],
         "providedBenefit": report["provided_benefit"],
-        "date": report["date"].isoformat(),
+        "date": _date_to_iso_noon(report["date"]),
         "ourParticipants": report["our_participants"],
         "otherParticipants": report["other_participants"],
         "isDraft": report["is_draft"],
