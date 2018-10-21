@@ -2,8 +2,8 @@
 
 Web based application for Open Lobby - register of lobby meetings.
 
-This application comunicates with Open Lobby Server over
-[GraphQL API](http://graphql.org). The server is available in repository
+This application comunicates with Open Lobby Server over 
+[GraphQL API](http://graphql.org). The server is available in repository 
 [openlobby/openlobby-server](https://github.com/openlobby/openlobby-server).
 
 ## Configuration
@@ -16,14 +16,14 @@ Configuration is done by environment variables:
 
 ## Docker
 
-Docker image is at Docker Hub
-[openlobby/openlobby-app](https://hub.docker.com/r/openlobby/openlobby-app/).
-It exposes web application on port 8020. You should provide it environment
+Docker image is at Docker Hub 
+[openlobby/openlobby-app](https://hub.docker.com/r/openlobby/openlobby-app/). 
+It exposes web application on port 8020. You should provide it environment 
 variables for configuration (at least `SECRET_KEY`).
 
 ## Demo
 
-Demo of Open Lobby with instructions is in repository
+Demo of Open Lobby with instructions is in repository 
 [openlobby/demo](https://github.com/openlobby/demo).
 
 ## Local run and development
@@ -39,10 +39,10 @@ Now you can use web interface at `http://localhost:8020`
 
 Next time you can just do steps 2 and 4.
 
-Application development server assumes that you have
-[openlobby/openlobby-server](https://github.com/openlobby/openlobby-server).
-running on `http://localhost:8010`. You can override this address in environment
-variable `OPENLOBBY_SERVER_DSN`. E.g.
+Application development server assumes that you have 
+[openlobby/openlobby-server](https://github.com/openlobby/openlobby-server). 
+running on `http://localhost:8010`. You can override this address in environment 
+variable `OPENLOBBY_SERVER_DSN`. E.g. 
 `OPENLOBBY_SERVER_DSN=http://my-server:8010 make run`
 
 ### Testing
