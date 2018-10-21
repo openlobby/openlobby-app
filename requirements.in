@@ -2,7 +2,4 @@ Django
 requests
 arrow
 pyjwt
-pytest
-pytest-django
-pytest-env
 bleach
