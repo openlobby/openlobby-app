@@ -50,7 +50,13 @@
 
     <div class="mt-auto py-1 small text-muted">
       {% if report.author.id == viewer.id %}
-        <div class="mt-1"><a href="{% url 'edit-report' id=report.id %}">editovat</a></div>
+        <div class="mt-1"><a href="{% url 'edit-report' id=report.id %}">upravit</a></div>
+      {% endif %}
+
+      {% if report.edited != report.published %}
+      <div class="mt-1">
+          upraveno: {{ report.edited|date:"DATETIME_FORMAT" }}
+      </div>
       {% endif %}
 
       <div class="mt-1">

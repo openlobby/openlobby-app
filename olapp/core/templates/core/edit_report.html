@@ -8,9 +8,9 @@
 
 <div class="mb-4">
   {% if report.isDraft %}
-    <h5 class="mb-3">Editace konceptu kontaktu</h5>
+    <h5 class="mb-3">Úprava konceptu kontaktu</h5>
   {% else %}
-  <h5 class="mb-3">Editace <span class="text-danger">publikovaného</span> kontaktu</h5>
+  <h5 class="mb-3">Úprava <span class="text-danger">publikovaného</span> kontaktu</h5>
   {% endif %}
   <form class="form" action="{% url 'edit-report' id=report.id %}" method="post">
     {% csrf_token %}
@@ -36,7 +36,8 @@
   <div class="row">
     <div class="col-2"></div>
     <div class="col-10 mt-4 text-muted">
-      Zadávejte prostý text. HTML tagy nejsou povoleny a budou z textu odstraněny.
+      <p>Zadávejte prostý text. HTML tagy nejsou povoleny a budou z textu odstraněny.</p>
+      <p>Po jedné hodině od poslední úpravy publikovaného kontaktu vytvoří další úprava historickou revizi kontaktu.</p>
     </div>
   </div>
 </div>

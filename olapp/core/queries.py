@@ -26,6 +26,7 @@ def search_reports(api_url, slice, *, token=None):
                 id
                 date
                 published
+                edited
                 title
                 body
                 receivedBenefit
@@ -62,6 +63,7 @@ def get_report(api_url, id, *, token=None):
             id
             date
             published
+            edited
             title
             body
             receivedBenefit
@@ -112,6 +114,7 @@ def get_author_with_reports(api_url, id, slice, *, token=None):
                         id
                         date
                         published
+                        edited
                         title
                         body
                         receivedBenefit

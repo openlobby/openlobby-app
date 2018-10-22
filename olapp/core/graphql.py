@@ -71,6 +71,8 @@ def pythonize_report(report):
         report["published"] = (
             arrow.get(report["published"]).to(settings.TIME_ZONE).datetime
         )
+    if "edited" in report:
+        report["edited"] = arrow.get(report["edited"]).to(settings.TIME_ZONE).datetime
     if "author" in report and report["author"] is not None:
         report["author"] = pythonize_author(report["author"])
     return report
