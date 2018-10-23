@@ -11,6 +11,7 @@ from olapp.core.views import (
     LoginRedirectView,
     LogoutView,
     ReportView,
+    ReportHistoryView,
 )
 
 urlpatterns = [
@@ -30,6 +31,11 @@ urlpatterns = [
         r"^report/(?P<id>[0-9A-Za-z-_]+)/edit/$",
         EditReportView.as_view(),
         name="edit-report",
+    ),
+    url(
+        r"^report/(?P<id>[0-9A-Za-z-_]+)/history/$",
+        ReportHistoryView.as_view(),
+        name="report-history",
     ),
     url(r"^authors/$", AuthorsView.as_view(), name="authors"),
     url(r"^author/(?P<id>[0-9A-Za-z-_]+)/$", AuthorView.as_view(), name="author"),

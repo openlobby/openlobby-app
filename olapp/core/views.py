@@ -66,7 +66,7 @@ class IndexView(TemplateView):
         pages = []
         for num in range(1, total_pages + 1):
             url_qs = urllib.parse.urlencode({"q": query, "p": num})
-            page_url = "{}?{}".format(url, url_qs)
+            page_url = f"{url}?{url_qs}"
             pages.append({"num": num, "url": page_url, "active": page == num})
 
         context["page_info"] = get_page_info(page, pages, total_pages)
@@ -109,7 +109,7 @@ class AuthorsView(TemplateView):
         pages = []
         for num in range(1, total_pages + 1):
             url_qs = urllib.parse.urlencode({"p": num})
-            page_url = "{}?{}".format(url, url_qs)
+            page_url = f"{url}?{url_qs}"
             pages.append({"num": num, "url": page_url, "active": page == num})
 
         context["page_info"] = get_page_info(page, pages, total_pages)
@@ -131,6 +131,28 @@ class ReportView(TemplateView):
         try:
             report, viewer = queries.get_report(
                 settings.OPENLOBBY_API_URL, kwargs["id"], token=token
+            )
+        except queries.NotFoundError:
+            raise Http404
+
+        context["report"] = report
+        context["viewer"] = viewer
+        return context
+
+
+class ReportHistoryView(TemplateView):
+    template_name = "core/report_history.html"
+
+    @get_token
+    def get_context_data(self, token, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            report, viewer = queries.get_report(
+                settings.OPENLOBBY_API_URL,
+                kwargs["id"],
+                token=token,
+                with_revisions=True,
             )
         except queries.NotFoundError:
             raise Http404
@@ -264,7 +286,7 @@ class NewReportView(FormView):
             url = reverse("edit-report", kwargs={"id": self.id})
         else:
             url = reverse("report", kwargs={"id": self.id})
-        return "{}?saved=true".format(url)
+        return f"{url}?saved=true"
 
     @get_token
     def form_valid(self, form, token):
@@ -303,7 +325,7 @@ class EditReportView(FormView):
             url = reverse("edit-report", kwargs={"id": self.id})
         else:
             url = reverse("report", kwargs={"id": self.id})
-        return "{}?saved=true".format(url)
+        return f"{url}?saved=true"
 
     @get_token
     def form_valid(self, form, token):

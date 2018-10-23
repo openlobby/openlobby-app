@@ -108,7 +108,7 @@ LOGGING = {
 
 # DSN to Open Lobby Server
 openlobby_server_dsn = os.environ.get("OPENLOBBY_SERVER_DSN", "http://localhost:8010")
-OPENLOBBY_API_URL = "{}/graphql".format(openlobby_server_dsn)
+OPENLOBBY_API_URL = f"{openlobby_server_dsn}/graphql"
 
 # this application URL (for OpenID authentication redirect)
 APP_URL = os.environ.get("APP_URL", "http://localhost:8020")

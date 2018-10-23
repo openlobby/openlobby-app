@@ -40,7 +40,7 @@ def decode_global_id(global_id):
 
 
 def encode_global_id(type, id):
-    global_id = "{}:{}".format(type, id)
+    global_id = f"{type}:{id}"
     return base64.b64encode(global_id.encode("utf-8")).decode("utf-8")
 
 
@@ -75,6 +75,8 @@ def pythonize_report(report):
         report["edited"] = arrow.get(report["edited"]).to(settings.TIME_ZONE).datetime
     if "author" in report and report["author"] is not None:
         report["author"] = pythonize_author(report["author"])
+    if "revisions" in report:
+        report["revisions"] = [pythonize_report(rev) for rev in report["revisions"]]
     return report
 
 
@@ -87,7 +89,7 @@ def get_viewer_from_data(data):
 
 def call_api(api_url, query, *, variables=None, token=None):
     if token is not None:
-        headers = {"Authorization": "Bearer {}".format(token)}
+        headers = {"Authorization": f"Bearer {token}"}
     else:
         headers = {}
 
@@ -111,13 +113,11 @@ def call_api(api_url, query, *, variables=None, token=None):
 
 
 def call_query(api_url, query, *, viewer=VIEWER, variables=None, token=None):
-    query_ = """
+    query_ = f"""
 query {{
     {query}
     {viewer}
-}}""".format(
-        query=query, viewer=viewer
-    )
+}}"""
     data = call_api(api_url, query_, variables=variables, token=token)
     viewer = get_viewer_from_data(data)
     return data, viewer

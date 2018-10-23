@@ -1,0 +1,15 @@
+{% extends "core/skeleton.html" %}
+
+{% block content %}
+
+{% include "core/report_snippet.html" %}
+
+<h5 class="mb-3">Historie úprav</h5>
+
+{% for revision in report.revisions %}
+  {% include "core/report_snippet.html" with report=revision is_revision=True %}
+{% empty %}
+<p><i>Žádné nejsou.</i></p>
+{% endfor %}
+
+{% endblock %}

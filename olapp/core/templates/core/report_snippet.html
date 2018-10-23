@@ -3,7 +3,13 @@
 
     <div class="d-flex justify-content-start py-1 border border-left-0 border-right-0 border-top-0 bg-light">
       <div class="pl-3 pr-2">{{ report.date|date:"DATE_FORMAT" }}</div>
-      <div class="px-2"><b><a href="{% url 'report' id=report.id %}">{{ report.title|safe }}</a></b></div>
+      <div class="px-2"><b>
+        {% if is_revision %}
+          {{ report.title|safe }}
+        {% else %}
+          <a href="{% url 'report' id=report.id %}">{{ report.title|safe }}</a>
+        {% endif %}
+      </b></div>
     </div>
 
     <div class="d-flex">
@@ -49,19 +55,24 @@
     </div>
 
     <div class="mt-auto py-1 small text-muted">
-      {% if report.author.id == viewer.id %}
+      {% if not is_revision and report.author.id == viewer.id %}
         <div class="mt-1"><a href="{% url 'edit-report' id=report.id %}">upravit</a></div>
       {% endif %}
 
       {% if report.edited != report.published %}
       <div class="mt-1">
           upraveno: {{ report.edited|date:"DATETIME_FORMAT" }}
+          {% if not is_revision and report.hasRevisions %}
+          <a class="ml-2" href="{% url 'report-history' id=report.id %}">historie úprav</a>
+          {% endif %}
       </div>
       {% endif %}
 
       <div class="mt-1">
           publikováno: {{ report.published|date:"DATETIME_FORMAT" }}
+          {% if not is_revision %}
           <a class="ml-2" href="{% url 'report' id=report.id %}">permalink</a>
+          {% endif %}
       </div>
 
       {% if report.extra.link %}

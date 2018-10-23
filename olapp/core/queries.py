@@ -8,6 +8,36 @@ from .graphql import (
 )
 
 
+report_fields = """
+id
+date
+published
+edited
+title
+body
+receivedBenefit
+providedBenefit
+ourParticipants
+otherParticipants
+extra
+hasRevisions
+"""
+
+author_fields = """
+id
+firstName
+lastName
+hasCollidingName
+extra
+"""
+
+revisions_snippet = f"""
+revisions {{
+    {report_fields}
+}}
+"""
+
+
 def search_reports(api_url, slice, *, token=None):
     if "after" in slice:
         slice_info = """(query:"{query}", highlight:true, first:{first}, after:"{after}")""".format(
@@ -18,35 +48,19 @@ def search_reports(api_url, slice, *, token=None):
             **slice
         )
 
-    query = """
-    searchReports {slice} {{
+    query = f"""
+    searchReports {slice_info} {{
         totalCount
         edges {{
             node {{
-                id
-                date
-                published
-                edited
-                title
-                body
-                receivedBenefit
-                providedBenefit
-                ourParticipants
-                otherParticipants
-                extra
+                {report_fields}
                 author {{
-                    id
-                    firstName
-                    lastName
-                    hasCollidingName
-                    extra
+                    {author_fields}
                 }}
             }}
         }}
     }}
-    """.format(
-        slice=slice_info
-    )
+    """
     data, viewer = call_query(api_url, query, token=token)
     search = data["searchReports"]
 
@@ -56,41 +70,35 @@ def search_reports(api_url, slice, *, token=None):
     return search, viewer
 
 
-def get_report(api_url, id, *, token=None):
-    query = """
-    node (id:"{id}") {{
+def get_report(api_url, id, *, token=None, with_revisions=False):
+    global_id = encode_global_id("Report", id)
+    revisions = revisions_snippet if with_revisions else ""
+    query = f"""
+    node (id:"{global_id}") {{
         ... on Report {{
-            id
-            date
-            published
-            edited
-            title
-            body
-            receivedBenefit
-            providedBenefit
-            ourParticipants
-            otherParticipants
+            {report_fields}
             isDraft
-            extra
             author {{
-                id
-                firstName
-                lastName
-                hasCollidingName
-                extra
+                {author_fields}
             }}
+            {revisions}
         }}
     }}
-    """.format(
-        id=encode_global_id("Report", id)
-    )
+    """
     data, viewer = call_query(api_url, query, token=token)
 
     report = data["node"]
     if report is None:
         raise NotFoundError()
 
-    return pythonize_report(report), viewer
+    report = pythonize_report(report)
+
+    # extend revisions with author info
+    if "revisions" in report:
+        for revision in report["revisions"]:
+            revision["author"] = report["author"]
+
+    return report, viewer
 
 
 def get_author_with_reports(api_url, id, slice, *, token=None):
@@ -99,37 +107,22 @@ def get_author_with_reports(api_url, id, slice, *, token=None):
     else:
         slice_info = """(first:{first})""".format(**slice)
 
-    query = """
-    node (id:"{id}") {{
+    global_id = encode_global_id("Author", id)
+    query = f"""
+    node (id:"{global_id}") {{
         ... on Author {{
-            id
-            firstName
-            lastName
-            hasCollidingName
-            extra
-            reports {slice} {{
+            {author_fields}
+            reports {slice_info} {{
                 totalCount
                 edges {{
                     node {{
-                        id
-                        date
-                        published
-                        edited
-                        title
-                        body
-                        receivedBenefit
-                        providedBenefit
-                        ourParticipants
-                        otherParticipants
-                        extra
+                        {report_fields}
                     }}
                 }}
             }}
         }}
     }}
-    """.format(
-        id=encode_global_id("Author", id), slice=slice_info
-    )
+    """
     data, viewer = call_query(api_url, query, token=token)
 
     author = data["node"]
@@ -178,23 +171,16 @@ def get_authors(api_url, slice, *, token=None):
     else:
         slice_info = """(first:{first})""".format(**slice)
 
-    query = """
-    authors {slice} {{
+    query = f"""
+    authors {slice_info} {{
         totalCount
         edges {{
             node {{
-                id
-                firstName
-                lastName
-                hasCollidingName
-                totalReports
-                extra
+                {author_fields}
             }}
         }}
     }}
-    """.format(
-        slice=slice_info
-    )
+    """
     data, viewer = call_query(api_url, query, token=token)
     authors = data["authors"]
 
