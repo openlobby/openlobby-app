@@ -1,11 +1,10 @@
-FROM python:3.6-slim
+FROM python:3.7-alpine
 
 RUN mkdir /code
 WORKDIR /code
-ADD requirements.txt /code/
-RUN pip install -r requirements.txt
-RUN pip install gunicorn
-ADD . /code/
+COPY requirements.txt ./
+RUN pip install -r requirements.txt && pip install gunicorn
+COPY . ./
 
 EXPOSE 8020
 
