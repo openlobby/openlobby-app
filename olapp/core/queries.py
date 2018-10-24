@@ -177,6 +177,7 @@ def get_authors(api_url, slice, *, token=None):
         edges {{
             node {{
                 {author_fields}
+                totalReports
             }}
         }}
     }}
