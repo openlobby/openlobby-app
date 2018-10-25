@@ -1,6 +1,6 @@
 # Open Lobby App
 
-Web based application for Open Lobby - register of lobby meetings.
+Web based application for Open Lobby - register of lobby contacts.
 
 This application comunicates with Open Lobby Server over 
 [GraphQL API](http://graphql.org). The server is available in repository 

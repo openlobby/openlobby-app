@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Registr lobbistických kontaktů</title>
+    <title>Evidence lobbistických kontaktů</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -22,14 +22,14 @@
   <body style="font-size: 90%">
 
     <div class="alert alert-warning text-center my-0 py-1">
-      Obsah registru je neaktuální a <b>bude smazán</b>, tak to otestujte! Pro aktuální obsah přejděte na
+      Obsah evidence je neaktuální a <b>bude smazán</b>, tak to otestujte! Pro aktuální obsah přejděte na
       <a href="https://forum.pirati.cz/vstupy-a-vystupy-f570/evidence-lobbistickych-kontaktu-t13315.html">Pirátské fórum</a>.
       Podněty a připomínky pište <a href="https://forum.pirati.cz/viewtopic.php?p=586837#p586837">na fórum</a>.
     </div>
 
     <nav class="navbar navbar-dark navbar-expand-lg bg-dark mb-0"> {# mb-4 až tu nebude alert #}
       <div class="container px-3">
-        <a class="navbar-brand" href="/">Registr lobbistických kontaktů</a>
+        <a class="navbar-brand" href="/">Evidence lobbistických kontaktů</a>
 
         <form class="form-inline" action="{% url 'index' %}" method="get">
           <input class="form-control form-control-sm" type="search" name="q" id="id_q" value="{{ form.q.value|default_if_none:"" }}">
@@ -76,7 +76,7 @@
 
     <div class="container-fluid pt-3 pb-2 border border-left-0 border-right-0 border-bottom-0 bg-light">
       <p class="text-muted text-center"><small>
-        Registr lobbistických kontaktů <a href="https://pirati.cz">České pirátské strany</a>. Postaveno na systému <a href="https://github.com/openlobby">Open Lobby</a>.<br>
+        Evidence lobbistických kontaktů <a href="https://pirati.cz">České pirátské strany</a>. Používá systém <a href="https://github.com/openlobby">Open Lobby</a>.<br>
         Podněty a připomínky pište <a href="https://forum.pirati.cz/viewtopic.php?p=586837#p586837">na pirátském fóru</a>. Kontakt na správce: <a href="mailto:jan.bednarik@pirati.cz">jan.bednarik@pirati.cz</a>
       </small></p>
     </div>
