@@ -3,6 +3,17 @@
 {% block content %}
 
 <div class="mt-0 mb-3 d-flex justify-content-end">
+  <div class="dropdown">
+    <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      řazení
+    </a>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item{% if sort_options.last_name_az.active %} active{% endif %}" href="{{ sort_options.last_name_az.url }}">příjmení A→Z</a>
+      <a class="dropdown-item{% if sort_options.last_name_za.active %} active{% endif %}" href="{{ sort_options.last_name_za.url }}">příjmení Z→A</a>
+      <a class="dropdown-item{% if sort_options.total_reports.active %} active{% endif %}" href="{{ sort_options.total_reports.url }}">přidal kontaktů</a>
+    </div>
+  </div>
+
   {% include "core/pagination_snippet.html" %}
 </div>
 

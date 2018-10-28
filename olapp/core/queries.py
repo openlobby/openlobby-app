@@ -1,3 +1,5 @@
+from enum import Enum
+
 from .graphql import (
     NotFoundError,
     call_query,
@@ -36,6 +38,12 @@ revisions {{
     {report_fields}
 }}
 """
+
+
+class AuthorsSort(Enum):
+    LAST_NAME = "last-name"
+    LAST_NAME_REVERSED = "-last-name"
+    TOTAL_REPORTS = "total-reports"
 
 
 def search_reports(api_url, slice, *, token=None):
@@ -165,14 +173,21 @@ def get_login_shortcuts(api_url, *, token=None):
     return shortcuts, viewer
 
 
-def get_authors(api_url, slice, *, token=None):
+def get_authors(api_url, slice, sort=None, *, token=None):
     if "after" in slice:
-        slice_info = """(first:{first}, after:"{after}")""".format(**slice)
+        slice_info = 'first:{first}, after:"{after}"'.format(**slice)
     else:
-        slice_info = """(first:{first})""".format(**slice)
+        slice_info = "first:{first}".format(**slice)
+
+    if sort == AuthorsSort.LAST_NAME_REVERSED:
+        sort_info = "sort: LAST_NAME, reversed: true"
+    elif sort == AuthorsSort.TOTAL_REPORTS:
+        sort_info = "sort: TOTAL_REPORTS"
+    else:
+        sort_info = "sort: LAST_NAME"
 
     query = f"""
-    authors {slice_info} {{
+    authors ({slice_info}, {sort_info}) {{
         totalCount
         edges {{
             node {{

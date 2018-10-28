@@ -92,8 +92,15 @@ class AuthorsView(TemplateView):
         else:
             slice = {"first": AUTHORS_PER_PAGE}
 
+        try:
+            sort = queries.AuthorsSort(
+                self.request.GET.get("s", queries.AuthorsSort.LAST_NAME)
+            )
+        except ValueError:
+            raise SuspiciousOperation
+
         authors, viewer = queries.get_authors(
-            settings.OPENLOBBY_API_URL, slice, token=token
+            settings.OPENLOBBY_API_URL, slice, sort, token=token
         )
 
         context["viewer"] = viewer
@@ -106,13 +113,39 @@ class AuthorsView(TemplateView):
             raise Http404
 
         url = reverse("authors")
+
+        # generate page info for paginator
         pages = []
         for num in range(1, total_pages + 1):
-            url_qs = urllib.parse.urlencode({"p": num})
+            url_qs = urllib.parse.urlencode({"p": num, "s": sort.value})
             page_url = f"{url}?{url_qs}"
             pages.append({"num": num, "url": page_url, "active": page == num})
-
         context["page_info"] = get_page_info(page, pages, total_pages)
+
+        # sort options
+        last_name_az_qs = urllib.parse.urlencode(
+            {"p": 1, "s": queries.AuthorsSort.LAST_NAME.value}
+        )
+        last_name_za_qs = urllib.parse.urlencode(
+            {"p": 1, "s": queries.AuthorsSort.LAST_NAME_REVERSED.value}
+        )
+        total_reports_qs = urllib.parse.urlencode(
+            {"p": 1, "s": queries.AuthorsSort.TOTAL_REPORTS.value}
+        )
+        context["sort_options"] = {
+            "last_name_az": {
+                "url": f"{url}?{last_name_az_qs}",
+                "active": sort == queries.AuthorsSort.LAST_NAME,
+            },
+            "last_name_za": {
+                "url": f"{url}?{last_name_za_qs}",
+                "active": sort == queries.AuthorsSort.LAST_NAME_REVERSED,
+            },
+            "total_reports": {
+                "url": f"{url}?{total_reports_qs}",
+                "active": sort == queries.AuthorsSort.TOTAL_REPORTS,
+            },
+        }
 
         return context
 
