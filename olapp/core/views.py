@@ -15,7 +15,7 @@ from . import queries
 from . import graphql
 from . import mutations
 from .forms import SearchForm, LoginForm, ReportForm
-from .utils import get_page_info, get_token, viewer_required
+from .utils import get_page_info, get_token, viewer_required, get_sort_option
 
 
 AUTHORS_PER_PAGE = 50
@@ -121,29 +121,15 @@ class AuthorsView(TemplateView):
         context["page_info"] = get_page_info(page, pages, total_pages)
 
         # sort options
-        last_name_az_qs = urllib.parse.urlencode(
-            {"p": 1, "s": queries.AuthorsSort.LAST_NAME.value}
-        )
-        last_name_za_qs = urllib.parse.urlencode(
-            {"p": 1, "s": queries.AuthorsSort.LAST_NAME_REVERSED.value}
-        )
-        total_reports_qs = urllib.parse.urlencode(
-            {"p": 1, "s": queries.AuthorsSort.TOTAL_REPORTS.value}
-        )
-        context["sort_options"] = {
-            "last_name_az": {
-                "url": f"{url}?{last_name_az_qs}",
-                "active": sort == queries.AuthorsSort.LAST_NAME,
-            },
-            "last_name_za": {
-                "url": f"{url}?{last_name_za_qs}",
-                "active": sort == queries.AuthorsSort.LAST_NAME_REVERSED,
-            },
-            "total_reports": {
-                "url": f"{url}?{total_reports_qs}",
-                "active": sort == queries.AuthorsSort.TOTAL_REPORTS,
-            },
-        }
+        context["sort_options"] = [
+            get_sort_option("příjmení A→Z", url, queries.AuthorsSort.LAST_NAME, sort),
+            get_sort_option(
+                "příjmení Z→A", url, queries.AuthorsSort.LAST_NAME_REVERSED, sort
+            ),
+            get_sort_option(
+                "přidal kontaktů", url, queries.AuthorsSort.TOTAL_REPORTS, sort
+            ),
+        ]
 
         return context
 

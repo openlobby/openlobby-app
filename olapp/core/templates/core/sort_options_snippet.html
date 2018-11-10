@@ -1,0 +1,10 @@
+<div class="dropdown">
+  <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    řazení
+  </a>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+  {% for so in sort_options %}
+    <a class="dropdown-item{% if so.active %} active{% endif %}" href="{{ so.url }}">{{ so.title }}</a>
+  {% endfor %}
+  </div>
+</div>

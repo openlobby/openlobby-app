@@ -1,5 +1,6 @@
 from functools import wraps
 from django.conf import settings
+import urllib.parse
 
 
 class UnauthorizedError(Exception):
@@ -74,3 +75,8 @@ def get_page_info(page, pages, total_pages):
         "previous_url": previous_url,
         "next_url": next_url,
     }
+
+
+def get_sort_option(title, url, option, active):
+    qs = urllib.parse.urlencode({"p": 1, "s": option.value})
+    return {"title": title, "url": f"{url}?{qs}", "active": option == active}
