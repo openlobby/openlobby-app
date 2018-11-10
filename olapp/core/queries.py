@@ -7,6 +7,8 @@ from .graphql import (
     decode_global_id,
     pythonize_report,
     pythonize_author,
+    str_argument,
+    encode_arguments,
 )
 
 
@@ -46,18 +48,20 @@ class AuthorsSort(Enum):
     TOTAL_REPORTS = "total-reports"
 
 
-def search_reports(api_url, slice, *, token=None):
-    if "after" in slice:
-        slice_info = """(query:"{query}", highlight:true, first:{first}, after:"{after}")""".format(
-            **slice
-        )
-    else:
-        slice_info = """(query:"{query}", highlight:true, first:{first})""".format(
-            **slice
-        )
+def search_reports(api_url, params, *, token=None):
+    arguments = {
+        "query": str_argument(params["query"]),
+        "first": params["first"],
+        "highlight": "true",
+    }
+
+    if "after" in params:
+        arguments["after"] = str_argument(params["after"])
+
+    arguments = encode_arguments(arguments)
 
     query = f"""
-    searchReports {slice_info} {{
+    searchReports ({arguments}) {{
         totalCount
         edges {{
             node {{
@@ -109,18 +113,20 @@ def get_report(api_url, id, *, token=None, with_revisions=False):
     return report, viewer
 
 
-def get_author_with_reports(api_url, id, slice, *, token=None):
-    if "after" in slice:
-        slice_info = """(first:{first}, after:"{after}")""".format(**slice)
-    else:
-        slice_info = """(first:{first})""".format(**slice)
+def get_author_with_reports(api_url, id, params, *, token=None):
+    arguments = {"first": params["first"]}
+
+    if "after" in params:
+        arguments["after"] = str_argument(params["after"])
+
+    arguments = encode_arguments(arguments)
 
     global_id = encode_global_id("Author", id)
     query = f"""
     node (id:"{global_id}") {{
         ... on Author {{
             {author_fields}
-            reports {slice_info} {{
+            reports ({arguments}) {{
                 totalCount
                 edges {{
                     node {{
@@ -173,21 +179,24 @@ def get_login_shortcuts(api_url, *, token=None):
     return shortcuts, viewer
 
 
-def get_authors(api_url, slice, sort=None, *, token=None):
-    if "after" in slice:
-        slice_info = 'first:{first}, after:"{after}"'.format(**slice)
-    else:
-        slice_info = "first:{first}".format(**slice)
+def get_authors(api_url, params, *, token=None):
+    arguments = {"first": params["first"]}
 
-    if sort == AuthorsSort.LAST_NAME_REVERSED:
-        sort_info = "sort: LAST_NAME, reversed: true"
-    elif sort == AuthorsSort.TOTAL_REPORTS:
-        sort_info = "sort: TOTAL_REPORTS"
+    if "after" in params:
+        arguments["after"] = str_argument(params["after"])
+
+    if params["sort"] == AuthorsSort.LAST_NAME_REVERSED:
+        arguments["sort"] = "LAST_NAME"
+        arguments["reversed"] = "true"
+    elif params["sort"] == AuthorsSort.TOTAL_REPORTS:
+        arguments["sort"] = "TOTAL_REPORTS"
     else:
-        sort_info = "sort: LAST_NAME"
+        arguments["sort"] = "LAST_NAME"
+
+    arguments = encode_arguments(arguments)
 
     query = f"""
-    authors ({slice_info}, {sort_info}) {{
+    authors ({arguments}) {{
         totalCount
         edges {{
             node {{

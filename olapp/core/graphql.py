@@ -126,3 +126,11 @@ query {{
 def call_mutation(api_url, mutation, *, variables=None, token=None):
     data = call_api(api_url, mutation, variables=variables, token=token)
     return data
+
+
+def str_argument(value):
+    return f'"{value}"'
+
+
+def encode_arguments(arguments):
+    return ", ".join(f"{k}: {v}" for k, v in arguments.items())

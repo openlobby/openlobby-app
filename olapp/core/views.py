@@ -43,14 +43,13 @@ class IndexView(TemplateView):
         except ValueError:
             raise SuspiciousOperation
 
+        params = {"query": query, "first": REPORTS_PER_PAGE}
+
         if page > 1:
-            cursor = graphql.encode_cursor((page - 1) * REPORTS_PER_PAGE)
-            slice = {"query": query, "first": REPORTS_PER_PAGE, "after": cursor}
-        else:
-            slice = {"query": query, "first": REPORTS_PER_PAGE}
+            params["after"] = graphql.encode_cursor((page - 1) * REPORTS_PER_PAGE)
 
         search, viewer = queries.search_reports(
-            settings.OPENLOBBY_API_URL, slice, token=token
+            settings.OPENLOBBY_API_URL, params, token=token
         )
 
         context["viewer"] = viewer
@@ -86,12 +85,6 @@ class AuthorsView(TemplateView):
         except ValueError:
             raise SuspiciousOperation
 
-        if page > 1:
-            cursor = graphql.encode_cursor((page - 1) * AUTHORS_PER_PAGE)
-            slice = {"first": AUTHORS_PER_PAGE, "after": cursor}
-        else:
-            slice = {"first": AUTHORS_PER_PAGE}
-
         try:
             sort = queries.AuthorsSort(
                 self.request.GET.get("s", queries.AuthorsSort.LAST_NAME)
@@ -99,8 +92,13 @@ class AuthorsView(TemplateView):
         except ValueError:
             raise SuspiciousOperation
 
+        params = {"sort": sort, "first": AUTHORS_PER_PAGE}
+
+        if page > 1:
+            params["after"] = graphql.encode_cursor((page - 1) * AUTHORS_PER_PAGE)
+
         authors, viewer = queries.get_authors(
-            settings.OPENLOBBY_API_URL, slice, sort, token=token
+            settings.OPENLOBBY_API_URL, params, token=token
         )
 
         context["viewer"] = viewer
@@ -206,13 +204,13 @@ class AuthorView(TemplateView):
         page = int(kwargs.get("page", 1))
         if page > 1:
             cursor = graphql.encode_cursor((page - 1) * REPORTS_PER_PAGE)
-            slice = {"first": REPORTS_PER_PAGE, "after": cursor}
+            params = {"first": REPORTS_PER_PAGE, "after": cursor}
         else:
-            slice = {"first": REPORTS_PER_PAGE}
+            params = {"first": REPORTS_PER_PAGE}
 
         try:
             author, viewer = queries.get_author_with_reports(
-                settings.OPENLOBBY_API_URL, id, slice, token=token
+                settings.OPENLOBBY_API_URL, id, params, token=token
             )
         except queries.NotFoundError:
             raise Http404
