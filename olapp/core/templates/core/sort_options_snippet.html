@@ -1,6 +1,6 @@
-<div class="dropdown">
+<div class="dropdown mr-auto">
   <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    řazení
+    řazení: {% for so in sort_options %}{% if so.active %}{{ so.title }}{% endif %}{% endfor %}
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
   {% for so in sort_options %}

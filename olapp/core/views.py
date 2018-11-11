@@ -43,7 +43,17 @@ class IndexView(TemplateView):
         except ValueError:
             raise SuspiciousOperation
 
-        params = {"query": query, "first": REPORTS_PER_PAGE}
+        try:
+            default_sort = (
+                queries.ReportsSort.RELEVANCE
+                if query
+                else queries.ReportsSort.PUBLISHED
+            )
+            sort = queries.ReportsSort(self.request.GET.get("s", default_sort))
+        except ValueError:
+            raise SuspiciousOperation
+
+        params = {"query": query, "sort": sort, "first": REPORTS_PER_PAGE}
 
         if page > 1:
             params["after"] = graphql.encode_cursor((page - 1) * REPORTS_PER_PAGE)
@@ -64,11 +74,24 @@ class IndexView(TemplateView):
         url = reverse("index")
         pages = []
         for num in range(1, total_pages + 1):
-            url_qs = urllib.parse.urlencode({"q": query, "p": num})
+            url_qs = urllib.parse.urlencode({"q": query, "p": num, "s": sort.value})
             page_url = f"{url}?{url_qs}"
             pages.append({"num": num, "url": page_url, "active": page == num})
 
         context["page_info"] = get_page_info(page, pages, total_pages)
+
+        # sort options
+        context["sort_options"] = [
+            get_sort_option(
+                "výsledek hledání", url, queries.ReportsSort.RELEVANCE, sort, q=query
+            ),
+            get_sort_option(
+                "publikováno", url, queries.ReportsSort.PUBLISHED, sort, q=query
+            ),
+            get_sort_option(
+                "datum kontaktu", url, queries.ReportsSort.DATE, sort, q=query
+            ),
+        ]
 
         return context
 

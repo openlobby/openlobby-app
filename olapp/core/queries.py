@@ -48,6 +48,12 @@ class AuthorsSort(Enum):
     TOTAL_REPORTS = "total-reports"
 
 
+class ReportsSort(Enum):
+    RELEVANCE = "relevance"
+    PUBLISHED = "published"
+    DATE = "date"
+
+
 def search_reports(api_url, params, *, token=None):
     arguments = {
         "query": str_argument(params["query"]),
@@ -57,6 +63,13 @@ def search_reports(api_url, params, *, token=None):
 
     if "after" in params:
         arguments["after"] = str_argument(params["after"])
+
+    if params["sort"] == ReportsSort.RELEVANCE:
+        arguments["sort"] = "RELEVANCE"
+    elif params["sort"] == ReportsSort.DATE:
+        arguments["sort"] = "DATE"
+    else:
+        arguments["sort"] = "PUBLISHED"
 
     arguments = encode_arguments(arguments)
 

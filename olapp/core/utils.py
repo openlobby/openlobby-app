@@ -77,6 +77,8 @@ def get_page_info(page, pages, total_pages):
     }
 
 
-def get_sort_option(title, url, option, active):
-    qs = urllib.parse.urlencode({"p": 1, "s": option.value})
+def get_sort_option(title, url, option, active, **qs_params):
+    qs_params["p"] = 1
+    qs_params["s"] = option.value
+    qs = urllib.parse.urlencode(qs_params)
     return {"title": title, "url": f"{url}?{qs}", "active": option == active}
