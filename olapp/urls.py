@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from olapp.core.views import (
+    AboutView,
     AccountView,
     AuthorView,
     AuthorsView,
@@ -24,6 +25,7 @@ urlpatterns = [
     ),
     url(r"^login-redirect/$", LoginRedirectView.as_view(), name="login-redirect"),
     url(r"^logout/$", LogoutView.as_view(), name="logout"),
+    url(r"^about/$", AboutView.as_view(), name="about"),
     url(r"^account/$", AccountView.as_view(), name="account"),
     url(r"^new-report/$", NewReportView.as_view(), name="new-report"),
     url(r"^report/(?P<id>[0-9A-Za-z-_]+)/$", ReportView.as_view(), name="report"),

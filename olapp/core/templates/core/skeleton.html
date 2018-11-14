@@ -5,7 +5,6 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="robots" content="noindex, nofollow">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
@@ -20,12 +19,6 @@
     </style>
   </head>
   <body style="font-size: 90%">
-
-    <div class="alert alert-info text-center my-0 py-1">
-      Evidence je v oficiálním ostrém provozu!
-      Podněty a připomínky pište <a href="https://forum.pirati.cz/viewtopic.php?p=586837#p586837">na fórum</a>.
-    </div>
-
     <nav class="navbar navbar-dark navbar-expand-lg bg-dark mb-0"> {# mb-4 až tu nebude alert #}
       <div class="container px-3">
         <a class="navbar-brand" href="/">Evidence kontaktů a schůzek</a>
@@ -62,9 +55,12 @@
           </li>
           {% if viewer %}
             <li class="nav-item">
-              <a class="nav-link py-1" href="{% url 'new-report' %}">přidat kontakt</a>
+              <a class="nav-link py-1 text-info" href="{% url 'new-report' %}">přidat kontakt</a>
             </li>
           {% endif %}
+          <li class="nav-item ml-auto">
+            <a class="nav-link py-1" href="{% url 'about' %}">o evidenci</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -75,7 +71,7 @@
 
     <div class="container-fluid pt-3 pb-2 border border-left-0 border-right-0 border-bottom-0 bg-light">
       <p class="text-muted text-center"><small>
-        Evidence kontaktů a schůzek <a href="https://pirati.cz">České pirátské strany</a>. API je na <a href="https://evidence-api.pirati.cz/graphql">evidence-api.pirati.cz</a>. Používá systém <a href="https://github.com/openlobby">Open Lobby</a>.<br>
+        Evidence kontaktů a schůzek <a href="https://pirati.cz">Pirátské strany</a>. API je na <a href="https://evidence-api.pirati.cz/graphql">evidence-api.pirati.cz</a>. Používá systém <a href="https://github.com/openlobby">Open Lobby</a>.<br>
         Podněty a připomínky pište <a href="https://forum.pirati.cz/viewtopic.php?p=586837#p586837">na pirátském fóru</a>. Kontakt na správce: <a href="mailto:jan.bednarik@pirati.cz">jan.bednarik@pirati.cz</a>
       </small></p>
     </div>

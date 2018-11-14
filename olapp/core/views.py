@@ -412,3 +412,13 @@ class EditReportView(FormView):
             data["our_participants"] = self.report["ourParticipants"]
             data["other_participants"] = self.report["otherParticipants"]
         return data
+
+
+class AboutView(TemplateView):
+    template_name = "core/about.html"
+
+    @get_token
+    def get_context_data(self, token, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["viewer"] = queries.get_viewer(settings.OPENLOBBY_API_URL, token=token)
+        return context
