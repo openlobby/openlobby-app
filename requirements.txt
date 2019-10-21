@@ -8,7 +8,7 @@ arrow==0.12.1
 bleach==3.0.2
 certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests
-django==2.1.2
+django==2.1.11
 idna==2.7                 # via requests
 pyjwt==1.6.4
 python-dateutil==2.7.3    # via arrow
