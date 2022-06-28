@@ -4,16 +4,31 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-arrow==0.12.1
+arrow==0.15.1
+    # via -r requirements.in
 bleach==3.0.2
-certifi==2018.10.15       # via requests
-chardet==3.0.4            # via requests
+    # via -r requirements.in
+certifi==2018.10.15
+    # via requests
+chardet==3.0.4
+    # via requests
 django==2.1.2
-idna==2.7                 # via requests
+    # via -r requirements.in
+idna==2.7
+    # via requests
 pyjwt==1.6.4
-python-dateutil==2.7.3    # via arrow
-pytz==2018.5              # via django
+    # via -r requirements.in
+python-dateutil==2.7.3
+    # via arrow
+pytz==2018.5
+    # via django
 requests==2.20.0
-six==1.11.0               # via bleach, python-dateutil
-urllib3==1.24             # via requests
-webencodings==0.5.1       # via bleach
+    # via -r requirements.in
+six==1.11.0
+    # via
+    #   bleach
+    #   python-dateutil
+urllib3==1.24
+    # via requests
+webencodings==0.5.1
+    # via bleach
